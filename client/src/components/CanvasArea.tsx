@@ -154,9 +154,9 @@ export default function CanvasArea() {
       
       {/* Canvas Header */}
       {!isPreviewMode && (
-        <div className="bg-white p-3 border-b border-gray-200 shadow-sm flex justify-between items-center">
+        <div className="bg-background p-3 border-b border-border shadow-sm flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <h2 className="font-medium text-gray-800">Canvas</h2>
+            <h2 className="font-medium text-foreground">Canvas</h2>
             <Badge variant="outline" className="ml-2 font-normal">
               {getTemplateName()}
             </Badge>
@@ -193,12 +193,12 @@ export default function CanvasArea() {
         
         {/* Editor tips - only shown in edit mode */}
         {!isPreviewMode && showControlsTip && (
-          <div className="absolute top-20 right-4 z-30 bg-white/95 border border-primary/20 shadow-lg rounded-lg p-3 max-w-[250px] text-sm animate-in fade-in slide-in-from-right-5 duration-500">
+          <div className="absolute top-20 right-4 z-30 bg-background/95 border border-primary/20 shadow-lg rounded-lg p-3 max-w-[250px] text-sm animate-in fade-in slide-in-from-right-5 duration-500">
             <div className="flex items-start gap-2">
               <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-gray-800 mb-1">Quick Tip</p>
-                <p className="text-xs text-gray-600 leading-snug">
+                <p className="font-medium text-foreground mb-1">Quick Tip</p>
+                <p className="text-xs text-muted-foreground leading-snug">
                   Drag elements from the toolbox and drop them into any drop zone. 
                   Click any element to edit its properties.
                 </p>
@@ -221,7 +221,7 @@ export default function CanvasArea() {
             <Button 
               variant="outline" 
               size="sm" 
-              className="absolute bottom-4 right-4 z-20 bg-white/80 backdrop-blur-sm shadow-sm"
+              className="absolute bottom-4 right-4 z-20 bg-background/80 backdrop-blur-sm shadow-sm"
             >
               <Info className="h-4 w-4 mr-1.5" />
               How it works
@@ -240,8 +240,8 @@ export default function CanvasArea() {
                   <Hand className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium">Drag and Drop</h3>
-                  <p className="text-sm text-gray-600">Drag elements from the toolbox on the left and drop them into highlighted zones.</p>
+                  <h3 className="text-sm font-medium text-foreground">Drag and Drop</h3>
+                  <p className="text-sm text-muted-foreground">Drag elements from the toolbox on the left and drop them into highlighted zones.</p>
                 </div>
               </div>
               <div className="flex gap-3 items-start">
@@ -249,8 +249,8 @@ export default function CanvasArea() {
                   <MousePointer className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium">Edit Properties</h3>
-                  <p className="text-sm text-gray-600">Click on any element to select it and edit its properties in the right panel.</p>
+                  <h3 className="text-sm font-medium text-foreground">Edit Properties</h3>
+                  <p className="text-sm text-muted-foreground">Click on any element to select it and edit its properties in the right panel.</p>
                 </div>
               </div>
               <div className="flex gap-3 items-start">
@@ -258,8 +258,8 @@ export default function CanvasArea() {
                   <Laptop className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium">Preview Modes</h3>
-                  <p className="text-sm text-gray-600">Toggle between desktop, tablet, and mobile views to see how your site looks on different devices.</p>
+                  <h3 className="text-sm font-medium text-foreground">Preview Modes</h3>
+                  <p className="text-sm text-muted-foreground">Toggle between desktop, tablet, and mobile views to see how your site looks on different devices.</p>
                 </div>
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function CanvasArea() {
         </Dialog>
         
         {/* Device frame with website content */}
-        <div className={`relative ${getContainerClass()} mx-auto bg-white shadow-md border border-gray-200 rounded overflow-hidden`}>
+        <div className={`relative ${getContainerClass()} mx-auto bg-background shadow-md border border-border rounded overflow-hidden`}>
           {/* Template Structure */}
           {currentTemplate && (
             <>

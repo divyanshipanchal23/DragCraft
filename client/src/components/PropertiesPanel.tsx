@@ -37,7 +37,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
   // Get element-specific properties
   const renderElementProperties = () => {
     if (!selectedElement) return (
-      <div className="text-center text-gray-500 p-4">
+      <div className="text-center text-muted-foreground p-4">
         Select an element to edit its properties
       </div>
     );
@@ -210,10 +210,10 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             
             <div className="space-y-2">
               <Label>Alignment</Label>
-              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+              <div className="flex border border-border rounded-md overflow-hidden divide-x divide-border">
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${textElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${textElement.style.alignment === 'left' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(textElement.id, {
                       style: { ...textElement.style, alignment: 'left' }
@@ -226,7 +226,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${textElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${textElement.style.alignment === 'center' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(textElement.id, {
                       style: { ...textElement.style, alignment: 'center' }
@@ -239,7 +239,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${textElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${textElement.style.alignment === 'right' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(textElement.id, {
                       style: { ...textElement.style, alignment: 'right' }
@@ -406,10 +406,10 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             
             <div className="space-y-2">
               <Label>Alignment</Label>
-              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+              <div className="flex border border-border rounded-md overflow-hidden divide-x divide-border">
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'left' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(buttonElement.id, {
                       style: { ...buttonElement.style, alignment: 'left' }
@@ -422,7 +422,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'center' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(buttonElement.id, {
                       style: { ...buttonElement.style, alignment: 'center' }
@@ -435,7 +435,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${buttonElement.style.alignment === 'right' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(buttonElement.id, {
                       style: { ...buttonElement.style, alignment: 'right' }
@@ -554,10 +554,10 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             
             <div className="space-y-2">
               <Label>Alignment</Label>
-              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+              <div className="flex border border-border rounded-md overflow-hidden divide-x divide-border">
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${videoElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'left' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(videoElement.id, {
                       style: { ...videoElement.style, alignment: 'left' }
@@ -570,7 +570,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${videoElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'center' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(videoElement.id, {
                       style: { ...videoElement.style, alignment: 'center' }
@@ -583,7 +583,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${videoElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'right' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(videoElement.id, {
                       style: { ...videoElement.style, alignment: 'right' }
@@ -719,10 +719,10 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             
             <div className="space-y-2">
               <Label>Alignment</Label>
-              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+              <div className="flex border border-border rounded-md overflow-hidden divide-x divide-border">
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${linkElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'left' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(linkElement.id, {
                       style: { ...linkElement.style, alignment: 'left' }
@@ -735,7 +735,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${linkElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'center' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(linkElement.id, {
                       style: { ...linkElement.style, alignment: 'center' }
@@ -748,7 +748,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 </Button>
                 <Button 
                   variant="ghost"
-                  className={`flex-1 py-1 ${linkElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'right' ? 'bg-secondary' : 'bg-background'}`}
                   onClick={() => {
                     updateElement(linkElement.id, {
                       style: { ...linkElement.style, alignment: 'right' }
@@ -942,7 +942,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             <div className="space-y-2 mt-4">
               <Label>Edit Table Headers</Label>
               <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-2 border rounded">
-                {tableElement.headers.map((header, index) => (
+                {tableElement.headers.map((header: string, index: number) => (
                   <div key={index} className="flex items-center space-x-2">
                     <Input 
                       value={header}
@@ -962,13 +962,13 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             <div className="space-y-2 mt-4">
               <Label>Edit Table Cells</Label>
               <div className="max-h-60 overflow-y-auto p-2 border rounded">
-                {tableElement.data.map((row, rowIndex) => (
+                {tableElement.data.map((row: string[], rowIndex: number) => (
                   <div key={rowIndex} className="mb-2">
-                    <div className="text-xs text-gray-500 mb-1">Row {rowIndex+1}</div>
+                    <div className="text-xs text-muted-foreground mb-1">Row {rowIndex+1}</div>
                     <div className="grid grid-cols-1 gap-2">
-                      {row.map((cell, cellIndex) => (
+                      {row.map((cell: string, cellIndex: number) => (
                         <div key={cellIndex} className="flex items-center space-x-2">
-                          <div className="text-xs text-gray-500 w-12">Col {cellIndex+1}</div>
+                          <div className="text-xs text-muted-foreground w-12">Col {cellIndex+1}</div>
                           <Input 
                             value={cell}
                             onChange={(e) => {
@@ -1309,10 +1309,10 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
   }
   
   return (
-    <div className="bg-white border-l border-gray-200 w-full md:w-80 md:flex-shrink-0 overflow-y-auto">
+    <div className="bg-background border-l border-border w-full md:w-80 md:flex-shrink-0 overflow-y-auto">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-700">
+          <h2 className="font-semibold text-foreground">
             {selectedElement ? getElementTypeName(selectedElement.type) : 'Element'} Properties
           </h2>
           <Button variant="ghost" size="icon" onClick={handleClose}>

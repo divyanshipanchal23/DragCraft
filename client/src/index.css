@@ -244,3 +244,25 @@
   border: 1px dashed hsl(var(--dropzone-border));
   transition: all 0.2s ease;
 }
+
+/* Fix for dark mode text colors */
+.dark .bg-white {
+  background-color: hsl(var(--background));
+}
+
+.dark .bg-gray-50 {
+  background-color: hsl(var(--muted));
+}
+
+.dark .text-gray-800 {
+  color: hsl(var(--foreground));
+}
+
+.dark .text-gray-600 {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Button with white background fix for dark mode */
+.dark .bg-white\/80 {
+  background-color: hsl(var(--background) / 0.8);
+}

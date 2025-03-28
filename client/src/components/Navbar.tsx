@@ -73,7 +73,7 @@ export default function Navbar() {
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`h-8 transition-all ${!canUndo ? 'opacity-50' : 'hover:bg-gray-100'}`}
+              className={`h-8 transition-all ${!canUndo ? 'opacity-50' : ''}`}
               onClick={undo} 
               disabled={!canUndo}
             >
@@ -83,7 +83,7 @@ export default function Navbar() {
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`h-8 transition-all ${!canRedo ? 'opacity-50' : 'hover:bg-gray-100'}`}
+              className={`h-8 transition-all ${!canRedo ? 'opacity-50' : ''}`}
               onClick={redo} 
               disabled={!canRedo}
             >
