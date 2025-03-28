@@ -1,16 +1,39 @@
 import { createContext, useContext, useReducer, useState, ReactNode, useCallback, useRef } from 'react';
 import { BuilderState, Element, ElementType, DropZone } from '../types/element';
-import { createDefaultTemplate, createNewElement, defaultTemplateId } from '../utils/element-templates';
+import { 
+  createDefaultTemplate, 
+  createTemplate2, 
+  createTemplate3, 
+  createNewElement, 
+  defaultTemplateId, 
+  template2Id, 
+  template3Id 
+} from '../utils/element-templates';
 
-// Initial state setup with default template
+// Create all templates
 const [defaultTemplate, initialDropZones, initialElements] = createDefaultTemplate();
+const [template2, template2DropZones, template2Elements] = createTemplate2();
+const [template3, template3DropZones, template3Elements] = createTemplate3();
+
+// Combine all template elements and dropzones
+const allElements = {
+  ...initialElements,
+  ...template2Elements,
+  ...template3Elements
+};
+
+const allDropZones = {
+  ...initialDropZones,
+  ...template2DropZones,
+  ...template3DropZones
+};
 
 const initialState: BuilderState = {
-  elements: initialElements,
-  dropZones: initialDropZones,
+  elements: allElements,
+  dropZones: allDropZones,
   selectedElementId: null,
   selectedDropZoneId: null,
-  templates: [defaultTemplate],
+  templates: [defaultTemplate, template2, template3],
   currentTemplateId: defaultTemplateId,
   isDragging: false,
   isPreviewMode: false,
@@ -29,7 +52,8 @@ type BuilderAction =
   | { type: 'SET_VIEW_MODE'; payload: 'desktop' | 'tablet' | 'mobile' }
   | { type: 'DUPLICATE_ELEMENT'; payload: { elementId: string } }
   | { type: 'MOVE_ELEMENT'; payload: { elementId: string; sourceDropZoneId: string; destinationDropZoneId: string; index?: number } }
-  | { type: 'SET_STATE'; payload: BuilderState };
+  | { type: 'SET_STATE'; payload: BuilderState }
+  | { type: 'SET_TEMPLATE'; payload: { templateId: string } };
 
 // Reducer function
 const builderReducer = (state: BuilderState, action: BuilderAction): BuilderState => {
@@ -233,6 +257,20 @@ const builderReducer = (state: BuilderState, action: BuilderAction): BuilderStat
       };
     }
     
+    case 'SET_TEMPLATE': {
+      const { templateId } = action.payload;
+      const selectedTemplate = state.templates.find(t => t.id === templateId);
+      
+      if (!selectedTemplate) return state;
+      
+      return {
+        ...state,
+        currentTemplateId: templateId,
+        selectedElementId: null,
+        selectedDropZoneId: null
+      };
+    }
+    
     default:
       return state;
   }
@@ -251,6 +289,7 @@ interface BuilderContextType {
   setViewMode: (mode: 'desktop' | 'tablet' | 'mobile') => void;
   duplicateElement: (elementId: string) => void;
   moveElement: (elementId: string, sourceDropZoneId: string, destinationDropZoneId: string, index?: number) => void;
+  setTemplate: (templateId: string) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -416,6 +455,13 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     });
   }, [dispatchWithHistory]);
   
+  const setTemplate = useCallback((templateId: string) => {
+    dispatchWithHistory({
+      type: 'SET_TEMPLATE',
+      payload: { templateId }
+    });
+  }, [dispatchWithHistory]);
+  
   const value = {
     state,
     addElement,
@@ -428,6 +474,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     setViewMode,
     duplicateElement,
     moveElement,
+    setTemplate,
     undo,
     redo,
     canUndo,

@@ -10,10 +10,6 @@ export default function Home() {
             <div className="flex-shrink-0 flex items-center">
               <h1 className="text-xl font-bold text-primary">Websites.co.in</h1>
             </div>
-            <div className="flex items-center">
-              <Button variant="outline" className="mr-2">Log In</Button>
-              <Button>Sign Up</Button>
-            </div>
           </div>
         </div>
       </header>
