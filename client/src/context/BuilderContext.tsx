@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useReducer, useState, ReactNode, useCallback, useRef } from 'react';
 import { BuilderState, Element, ElementType, DropZone } from '../types/element';
 import { createDefaultTemplate, createNewElement, defaultTemplateId } from '../utils/element-templates';
 
@@ -28,7 +28,8 @@ type BuilderAction =
   | { type: 'TOGGLE_PREVIEW_MODE' }
   | { type: 'SET_VIEW_MODE'; payload: 'desktop' | 'tablet' | 'mobile' }
   | { type: 'DUPLICATE_ELEMENT'; payload: { elementId: string } }
-  | { type: 'MOVE_ELEMENT'; payload: { elementId: string; sourceDropZoneId: string; destinationDropZoneId: string; index?: number } };
+  | { type: 'MOVE_ELEMENT'; payload: { elementId: string; sourceDropZoneId: string; destinationDropZoneId: string; index?: number } }
+  | { type: 'SET_STATE'; payload: BuilderState };
 
 // Reducer function
 const builderReducer = (state: BuilderState, action: BuilderAction): BuilderState => {
@@ -220,6 +221,18 @@ const builderReducer = (state: BuilderState, action: BuilderAction): BuilderStat
       };
     }
     
+    case 'SET_STATE': {
+      // Preserve UI-only state properties like selection and preview mode
+      return {
+        ...action.payload,
+        selectedElementId: state.selectedElementId,
+        selectedDropZoneId: state.selectedDropZoneId,
+        isPreviewMode: state.isPreviewMode,
+        viewMode: state.viewMode,
+        isDragging: state.isDragging
+      };
+    }
+    
     default:
       return state;
   }
@@ -238,6 +251,10 @@ interface BuilderContextType {
   setViewMode: (mode: 'desktop' | 'tablet' | 'mobile') => void;
   duplicateElement: (elementId: string) => void;
   moveElement: (elementId: string, sourceDropZoneId: string, destinationDropZoneId: string, index?: number) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 // Create context
@@ -247,27 +264,111 @@ const BuilderContext = createContext<BuilderContextType | undefined>(undefined);
 export function BuilderProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(builderReducer, initialState);
   
+  // History tracking
+  const historyRef = useRef<{
+    past: BuilderState[];
+    future: BuilderState[];
+    present: BuilderState;
+  }>({
+    past: [],
+    future: [],
+    present: initialState
+  });
+  
+  // Update history when state changes
+  const saveToHistory = useCallback((newState: BuilderState) => {
+    historyRef.current = {
+      past: [...historyRef.current.past, historyRef.current.present],
+      present: newState,
+      future: []
+    };
+  }, []);
+  
+  // Custom dispatch that tracks history
+  const dispatchWithHistory = useCallback((action: BuilderAction) => {
+    // Skip history for view-only actions
+    const isViewOnlyAction = 
+      action.type === 'SELECT_ELEMENT' || 
+      action.type === 'SELECT_DROP_ZONE' || 
+      action.type === 'SET_DRAGGING' || 
+      action.type === 'TOGGLE_PREVIEW_MODE' ||
+      action.type === 'SET_VIEW_MODE';
+    
+    const prevState = state;
+    dispatch(action);
+    
+    // Only save to history for actions that modify the canvas
+    if (!isViewOnlyAction) {
+      // Note: We access the current state outside of the callback,
+      // but React guarantees the dispatch call is synchronous
+      // so we can update our history right after
+      setTimeout(() => {
+        saveToHistory(state);
+      }, 0);
+    }
+  }, [state, saveToHistory]);
+  
+  // Undo/Redo functionality
+  const undo = useCallback(() => {
+    const { past, present, future } = historyRef.current;
+    
+    if (past.length === 0) return;
+    
+    const previous = past[past.length - 1];
+    const newPast = past.slice(0, past.length - 1);
+    
+    historyRef.current = {
+      past: newPast,
+      present: previous,
+      future: [present, ...future]
+    };
+    
+    dispatch({ type: 'SET_STATE', payload: previous } as any);
+  }, []);
+  
+  const redo = useCallback(() => {
+    const { past, present, future } = historyRef.current;
+    
+    if (future.length === 0) return;
+    
+    const next = future[0];
+    const newFuture = future.slice(1);
+    
+    historyRef.current = {
+      past: [...past, present],
+      present: next,
+      future: newFuture
+    };
+    
+    dispatch({ type: 'SET_STATE', payload: next } as any);
+  }, []);
+  
+  // Derived properties
+  const canUndo = historyRef.current.past.length > 0;
+  const canRedo = historyRef.current.future.length > 0;
+  
+  // Action creators
   const addElement = useCallback((elementType: ElementType, dropZoneId: string) => {
     const newElement = createNewElement(elementType, dropZoneId);
-    dispatch({ 
+    dispatchWithHistory({ 
       type: 'ADD_ELEMENT', 
       payload: { element: newElement, dropZoneId } 
     });
-  }, []);
+  }, [dispatchWithHistory]);
   
   const updateElement = useCallback((elementId: string, updates: Partial<Element>) => {
-    dispatch({ 
+    dispatchWithHistory({ 
       type: 'UPDATE_ELEMENT', 
       payload: { elementId, updates } 
     });
-  }, []);
+  }, [dispatchWithHistory]);
   
   const deleteElement = useCallback((elementId: string) => {
-    dispatch({ 
+    dispatchWithHistory({ 
       type: 'DELETE_ELEMENT', 
       payload: { elementId } 
     });
-  }, []);
+  }, [dispatchWithHistory]);
   
   const selectElement = useCallback((elementId: string | null) => {
     dispatch({ 
@@ -302,18 +403,18 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
   }, []);
   
   const duplicateElement = useCallback((elementId: string) => {
-    dispatch({ 
+    dispatchWithHistory({ 
       type: 'DUPLICATE_ELEMENT', 
       payload: { elementId } 
     });
-  }, []);
+  }, [dispatchWithHistory]);
   
   const moveElement = useCallback((elementId: string, sourceDropZoneId: string, destinationDropZoneId: string, index?: number) => {
-    dispatch({
+    dispatchWithHistory({
       type: 'MOVE_ELEMENT',
       payload: { elementId, sourceDropZoneId, destinationDropZoneId, index }
     });
-  }, []);
+  }, [dispatchWithHistory]);
   
   const value = {
     state,
@@ -326,7 +427,11 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     togglePreviewMode,
     setViewMode,
     duplicateElement,
-    moveElement
+    moveElement,
+    undo,
+    redo,
+    canUndo,
+    canRedo
   };
   
   return (

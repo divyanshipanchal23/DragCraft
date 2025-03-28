@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Undo2, Redo2, Eye, Save, ArrowLeft } from 'lucide-react';
 
 export default function Navbar() {
-  const { state, togglePreviewMode, setViewMode } = useBuilder();
+  const { state, togglePreviewMode, setViewMode, undo, redo, canUndo, canRedo } = useBuilder();
   const { isPreviewMode, viewMode } = state;
   const { toast } = useToast();
   
@@ -25,11 +25,23 @@ export default function Navbar() {
         
         {!isPreviewMode && (
           <div className="hidden md:flex space-x-2">
-            <Button variant="outline" size="sm" className="h-8">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8" 
+              onClick={undo} 
+              disabled={!canUndo}
+            >
               <Undo2 className="h-4 w-4 mr-1" />
               Undo
             </Button>
-            <Button variant="outline" size="sm" className="h-8">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8" 
+              onClick={redo} 
+              disabled={!canRedo}
+            >
               <Redo2 className="h-4 w-4 mr-1" />
               Redo
             </Button>
