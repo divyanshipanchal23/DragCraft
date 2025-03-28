@@ -942,6 +942,254 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
           </>
         );
       }
+      case 'container': {
+        const containerElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Background Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={containerElement.style.backgroundColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(containerElement.id, {
+                      style: { ...containerElement.style, backgroundColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={containerElement.style.backgroundColor}
+                  onChange={(e) => {
+                    updateElement(containerElement.id, {
+                      style: { ...containerElement.style, backgroundColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Radius</Label>
+              <Input 
+                type="number" 
+                value={containerElement.style.borderRadius} 
+                onChange={(e) => {
+                  updateElement(containerElement.id, {
+                    style: { ...containerElement.style, borderRadius: parseInt(e.target.value) || 0 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Width</Label>
+              <Input 
+                type="number" 
+                value={containerElement.style.borderWidth} 
+                onChange={(e) => {
+                  updateElement(containerElement.id, {
+                    style: { ...containerElement.style, borderWidth: parseInt(e.target.value) || 0 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={containerElement.style.borderColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(containerElement.id, {
+                      style: { ...containerElement.style, borderColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={containerElement.style.borderColor}
+                  onChange={(e) => {
+                    updateElement(containerElement.id, {
+                      style: { ...containerElement.style, borderColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Min Height</Label>
+              <Input 
+                type="number" 
+                value={containerElement.style.minHeight} 
+                onChange={(e) => {
+                  updateElement(containerElement.id, {
+                    style: { ...containerElement.style, minHeight: parseInt(e.target.value) || 100 }
+                  });
+                }}
+              />
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
+      
+      case 'two-column': {
+        const twoColumnElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Gap Between Columns</Label>
+              <Input 
+                type="number" 
+                value={twoColumnElement.style.gap} 
+                onChange={(e) => {
+                  updateElement(twoColumnElement.id, {
+                    style: { ...twoColumnElement.style, gap: parseInt(e.target.value) || 0 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Background Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={twoColumnElement.style.backgroundColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(twoColumnElement.id, {
+                      style: { ...twoColumnElement.style, backgroundColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={twoColumnElement.style.backgroundColor}
+                  onChange={(e) => {
+                    updateElement(twoColumnElement.id, {
+                      style: { ...twoColumnElement.style, backgroundColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
+      
+      case 'gallery': {
+        const galleryElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Number of Columns</Label>
+              <Input 
+                type="number" 
+                value={galleryElement.style.columns} 
+                onChange={(e) => {
+                  updateElement(galleryElement.id, {
+                    style: { ...galleryElement.style, columns: parseInt(e.target.value) || 1 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Gap Between Images</Label>
+              <Input 
+                type="number" 
+                value={galleryElement.style.gap} 
+                onChange={(e) => {
+                  updateElement(galleryElement.id, {
+                    style: { ...galleryElement.style, gap: parseInt(e.target.value) || 0 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <Label>Images</Label>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    const newImages = [...galleryElement.images];
+                    newImages.push({
+                      id: `img-${Date.now()}`,
+                      src: 'https://via.placeholder.com/200',
+                      alt: 'New image'
+                    });
+                    updateElement(galleryElement.id, { images: newImages });
+                  }}
+                >
+                  Add Image
+                </Button>
+              </div>
+              
+              <div className="space-y-4 max-h-60 overflow-y-auto p-2 border rounded-md">
+                {galleryElement.images.map((image: any, index: number) => (
+                  <div key={image.id} className="border p-3 rounded-md space-y-2">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">Image {index + 1}</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="text-red-500 h-8 w-8 p-0"
+                        onClick={() => {
+                          const newImages = [...galleryElement.images];
+                          newImages.splice(index, 1);
+                          updateElement(galleryElement.id, { images: newImages });
+                        }}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Image URL</Label>
+                      <Input 
+                        type="text" 
+                        value={image.src} 
+                        onChange={(e) => {
+                          const newImages = [...galleryElement.images];
+                          newImages[index] = { ...image, src: e.target.value };
+                          updateElement(galleryElement.id, { images: newImages });
+                        }}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Alt Text</Label>
+                      <Input 
+                        type="text" 
+                        value={image.alt} 
+                        onChange={(e) => {
+                          const newImages = [...galleryElement.images];
+                          newImages[index] = { ...image, alt: e.target.value };
+                          updateElement(galleryElement.id, { images: newImages });
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
       
       default:
         return commonProps;
