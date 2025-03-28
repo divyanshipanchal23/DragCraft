@@ -428,9 +428,10 @@ export default function PlacedElement({ id }: PlacedElementProps) {
     <div 
       ref={ref}
       className={`
-        relative ${isSelected && !isPreviewMode ? 'outline outline-2 outline-primary' : ''}
-        ${isDragging ? 'opacity-50' : 'opacity-100'}
-        p-2 rounded transition-opacity
+        relative element-enter
+        ${isSelected && !isPreviewMode ? 'element-selected' : ''}
+        ${isDragging ? 'dragging-element' : 'opacity-100'}
+        p-2 rounded-md transition-all duration-200 hover:shadow-sm
       `}
       onClick={handleClick}
       style={{ cursor: isPreviewMode ? 'default' : 'pointer' }}
@@ -439,8 +440,7 @@ export default function PlacedElement({ id }: PlacedElementProps) {
       
       {isSelected && !isPreviewMode && (
         <>
-          {/* Selection overlay */}
-          <div className="absolute -top-1 -left-1 -right-1 -bottom-1 border-2 border-primary rounded pointer-events-none"></div>
+          {/* Selection overlay - removed due to using element-selected class instead */}
           
           {/* Resize handles */}
           <div className="absolute top-0 left-0 w-2 h-2 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2"></div>

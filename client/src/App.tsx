@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Builder from "@/pages/builder";
 import { BuilderProvider } from "./context/BuilderContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function Router() {
   return (
@@ -20,10 +21,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BuilderProvider>
-        <Router />
-        <Toaster />
-      </BuilderProvider>
+      <ThemeProvider>
+        <BuilderProvider>
+          <Router />
+          <Toaster />
+        </BuilderProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -3,11 +3,12 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useBuilder } from '../context/BuilderContext';
+import { useTheme } from '../context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Undo2, Redo2, Eye, Save, ArrowLeft, 
   Laptop, Smartphone, Tablet, Home, Menu, X, 
-  BookTemplate 
+  BookTemplate, Moon, Sun, Search
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -18,6 +19,7 @@ import {
 export default function Navbar() {
   const { state, togglePreviewMode, setViewMode, undo, redo, canUndo, canRedo, setTemplate } = useBuilder();
   const { isPreviewMode, viewMode } = state;
+  const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -57,11 +59,11 @@ export default function Navbar() {
   };
 
   return (
-    <header className={`sticky top-0 z-50 bg-white px-4 py-3 flex items-center justify-between transition-all duration-300 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
+    <header className={`sticky top-0 z-50 header-bg px-4 py-3 flex items-center justify-between transition-all duration-300 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
           <BookTemplate className="h-6 w-6 mr-2 text-primary" />
-          <h1 className="text-xl font-bold text-primary">
+          <h1 className="text-xl font-bold text-foreground">
             Website Builder
           </h1>
         </div>
@@ -104,6 +106,15 @@ export default function Navbar() {
       
       {/* Desktop navigation */}
       <div className="hidden md:flex items-center space-x-3">
+        <Button 
+          variant="outline" 
+          size="icon"
+          className="h-9 w-9 transition-all" 
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-9 px-3">
@@ -175,12 +186,12 @@ export default function Navbar() {
       
       {/* Mobile navigation menu */}
       {menuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white shadow-lg p-4 border-t border-gray-200 flex flex-col space-y-2 md:hidden">
-          <div className="flex justify-between">
+        <div className="absolute top-full left-0 right-0 header-bg shadow-lg p-4 border-t border-border flex flex-col space-y-2 md:hidden">
+          <div className="flex justify-between items-center mb-1">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 justify-start"
+              className="flex-1 justify-start transition-all"
               onClick={undo} 
               disabled={!canUndo}
             >
@@ -190,12 +201,20 @@ export default function Navbar() {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="flex-1 justify-start"
+              className="flex-1 justify-start transition-all"
               onClick={redo} 
               disabled={!canRedo}
             >
               <Redo2 className="h-4 w-4 mr-2" />
               Redo
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon"
+              className="h-8 w-8 ml-2 transition-all" 
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
           
@@ -215,16 +234,31 @@ export default function Navbar() {
           
           {isPreviewMode && (
             <div className="flex flex-col space-y-1">
-              <p className="text-sm text-gray-500 px-2">View as:</p>
-              <Button variant="ghost" size="sm" className={`justify-start ${viewMode === 'desktop' ? 'bg-gray-100' : ''}`} onClick={() => setViewMode('desktop')}>
+              <p className="text-sm text-muted-foreground px-2">View as:</p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`justify-start transition-all ${viewMode === 'desktop' ? 'bg-secondary' : ''}`} 
+                onClick={() => setViewMode('desktop')}
+              >
                 <Laptop className="h-4 w-4 mr-2" />
                 Desktop
               </Button>
-              <Button variant="ghost" size="sm" className={`justify-start ${viewMode === 'tablet' ? 'bg-gray-100' : ''}`} onClick={() => setViewMode('tablet')}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`justify-start transition-all ${viewMode === 'tablet' ? 'bg-secondary' : ''}`} 
+                onClick={() => setViewMode('tablet')}
+              >
                 <Tablet className="h-4 w-4 mr-2" />
                 Tablet
               </Button>
-              <Button variant="ghost" size="sm" className={`justify-start ${viewMode === 'mobile' ? 'bg-gray-100' : ''}`} onClick={() => setViewMode('mobile')}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className={`justify-start transition-all ${viewMode === 'mobile' ? 'bg-secondary' : ''}`} 
+                onClick={() => setViewMode('mobile')}
+              >
                 <Smartphone className="h-4 w-4 mr-2" />
                 Mobile
               </Button>
@@ -232,22 +266,41 @@ export default function Navbar() {
           )}
           
           <div className="flex flex-col space-y-1">
-            <p className="text-sm text-gray-500 px-2">Templates:</p>
-            <Button variant="ghost" size="sm" className="justify-start" onClick={() => switchTemplate('template-1')}>
+            <p className="text-sm text-muted-foreground px-2">Templates:</p>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="justify-start transition-all" 
+              onClick={() => switchTemplate('template-1')}
+            >
               <BookTemplate className="h-4 w-4 mr-2" />
               Basic Template
             </Button>
-            <Button variant="ghost" size="sm" className="justify-start" onClick={() => switchTemplate('template-2')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="justify-start transition-all" 
+              onClick={() => switchTemplate('template-2')}
+            >
               <BookTemplate className="h-4 w-4 mr-2" />
               Portfolio Template
             </Button>
-            <Button variant="ghost" size="sm" className="justify-start" onClick={() => switchTemplate('template-3')}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="justify-start transition-all" 
+              onClick={() => switchTemplate('template-3')}
+            >
               <BookTemplate className="h-4 w-4 mr-2" />
               Business Template
             </Button>
           </div>
           
-          <Button variant="default" className="w-full mt-2 bg-primary hover:bg-primary/90" onClick={handleSave}>
+          <Button 
+            variant="default" 
+            className="w-full mt-2 bg-primary hover:bg-primary/90 transition-all" 
+            onClick={handleSave}
+          >
             <Save className="h-4 w-4 mr-2" />
             Save Website
           </Button>

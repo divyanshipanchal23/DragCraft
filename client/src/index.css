@@ -3,11 +3,244 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --header-bg: 0 0% 100%;
+    --dropzone-bg: 210 40% 98%;
+    --dropzone-border: 210 40% 90%;
+    --canvas-bg: 210 50% 98%;
+    --section-bg-1: 210 40% 96.1%;
+    --section-bg-2: 0 0% 100%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --header-bg: 222.2 47.4% 11.2%;
+    --dropzone-bg: 217.2 32.6% 12%;
+    --dropzone-border: 217.2 32.6% 17.5%;
+    --canvas-bg: 222.2 47.4% 7%;
+    --section-bg-1: 217.2 32.6% 12%;
+    --section-bg-2: 222.2 47.4% 11.2%;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-background text-foreground transition-colors duration-300;
   }
+}
+
+/* Drag and drop animations */
+.dragging-element {
+  transform: scale(1.05);
+  opacity: 0.7;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              opacity 0.2s ease, 
+              box-shadow 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  position: relative;
+}
+
+.dragging-element::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  background: linear-gradient(45deg, 
+    hsl(var(--primary) / 0.3),
+    transparent,
+    hsl(var(--primary) / 0.3)
+  );
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.6;
+  filter: blur(8px);
+  animation: rotateBorder 2s linear infinite;
+}
+
+@keyframes rotateBorder {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+.drop-indicator {
+  border: 2px dashed hsl(var(--primary) / 0.5);
+  background-color: hsl(var(--primary) / 0.1);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: breathe 2s infinite alternate;
+}
+
+@keyframes breathe {
+  from {
+    background-color: hsl(var(--primary) / 0.05);
+  }
+  to {
+    background-color: hsl(var(--primary) / 0.15);
+  }
+}
+
+/* Drop zone hover effect */
+.drop-zone-hover {
+  background-color: hsl(var(--primary) / 0.15);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: dropPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes dropPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
+  }
+  50% {
+    transform: scale(1.005);
+    box-shadow: 0 0 0 6px hsl(var(--primary) / 0.1);
+  }
+}
+
+/* Selection animation */
+.element-selected {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+  animation: pulse 3s infinite;
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+}
+
+.element-selected:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px hsl(var(--primary) / 0.3);
+}
+
+@keyframes pulse {
+  0% {
+    outline-color: hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.1);
+  }
+  50% {
+    outline-color: hsl(var(--primary) / 1);
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
+  100% {
+    outline-color: hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.1);
+  }
+}
+
+/* Visual section separation */
+.section-bg-1 {
+  background-color: hsl(var(--section-bg-1));
+  transition: background-color 0.5s ease;
+}
+
+.section-bg-2 {
+  background-color: hsl(var(--section-bg-2));
+  transition: background-color 0.5s ease;
+}
+
+/* Element entry animation */
+.element-enter {
+  animation: elementEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+@keyframes elementEnter {
+  0% {
+    transform: translateY(15px) scale(0.96);
+    opacity: 0;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Hover effect for elements */
+.hover\:element-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+/* Recently added element effect */
+.recently-added {
+  animation: recentlyAdded 1.5s ease-out;
+}
+
+@keyframes recentlyAdded {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+}
+
+/* Canvas background */
+.canvas-bg {
+  background-color: hsl(var(--canvas-bg));
+}
+
+/* Header background */
+.header-bg {
+  background-color: hsl(var(--header-bg));
+}
+
+/* Drop zone styling */
+.dropzone {
+  background-color: hsl(var(--dropzone-bg));
+  border: 1px dashed hsl(var(--dropzone-border));
+  transition: all 0.2s ease;
 }
