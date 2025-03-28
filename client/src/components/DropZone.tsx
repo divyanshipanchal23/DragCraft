@@ -4,7 +4,7 @@ import { useBuilder } from '../context/BuilderContext';
 import PlacedElement from './PlacedElement';
 import { ElementType } from '../types/element';
 import { cn } from '@/lib/utils';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, History } from 'lucide-react';
 
 interface DropZoneProps {
   id: string;
@@ -13,7 +13,7 @@ interface DropZoneProps {
 }
 
 export default function DropZone({ id, className = '', placeholderText = 'Drag and drop elements here' }: DropZoneProps) {
-  const { state, addElement, selectDropZone } = useBuilder();
+  const { state, addElement, selectDropZone, addToRecentElements } = useBuilder();
   const dropZone = state.dropZones[id];
   const isPreviewMode = state.isPreviewMode;
   const isSelected = state.selectedDropZoneId === id;
@@ -24,7 +24,12 @@ export default function DropZone({ id, className = '', placeholderText = 'Drag a
     accept: ['ELEMENT', 'PLACED_ELEMENT'],
     drop: (item: { type: ElementType } | { id: string, parentId: string | null }) => {
       if ('type' in item) {
+        // Add the element
         addElement(item.type, id);
+        
+        // Add to recent elements
+        addToRecentElements(item.type);
+        
         // Show a sparkle effect when an element is added
         setRecentlyAdded(true);
         setTimeout(() => setRecentlyAdded(false), 1500);

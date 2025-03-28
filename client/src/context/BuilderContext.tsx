@@ -37,7 +37,8 @@ const initialState: BuilderState = {
   currentTemplateId: defaultTemplateId,
   isDragging: false,
   isPreviewMode: false,
-  viewMode: 'desktop'
+  viewMode: 'desktop',
+  recentElements: []
 };
 
 // Action types
@@ -53,7 +54,8 @@ type BuilderAction =
   | { type: 'DUPLICATE_ELEMENT'; payload: { elementId: string } }
   | { type: 'MOVE_ELEMENT'; payload: { elementId: string; sourceDropZoneId: string; destinationDropZoneId: string; index?: number } }
   | { type: 'SET_STATE'; payload: BuilderState }
-  | { type: 'SET_TEMPLATE'; payload: { templateId: string } };
+  | { type: 'SET_TEMPLATE'; payload: { templateId: string } }
+  | { type: 'ADD_TO_RECENT_ELEMENTS'; payload: { elementType: ElementType } };
 
 // Reducer function
 const builderReducer = (state: BuilderState, action: BuilderAction): BuilderState => {
@@ -271,6 +273,43 @@ const builderReducer = (state: BuilderState, action: BuilderAction): BuilderStat
       };
     }
     
+    case 'ADD_TO_RECENT_ELEMENTS': {
+      const { elementType } = action.payload;
+      
+      // Check if element type already in recent elements
+      const isAlreadyInRecent = state.recentElements.includes(elementType);
+      
+      if (isAlreadyInRecent) {
+        // Move it to the start if it already exists
+        const updatedRecentElements = [
+          elementType,
+          ...state.recentElements.filter(type => type !== elementType)
+        ];
+        
+        // Limit to 5 elements
+        const limitedRecentElements = updatedRecentElements.slice(0, 5);
+        
+        return {
+          ...state,
+          recentElements: limitedRecentElements
+        };
+      } else {
+        // Add new element type at the start
+        const updatedRecentElements = [
+          elementType, 
+          ...state.recentElements
+        ];
+        
+        // Limit to 5 elements
+        const limitedRecentElements = updatedRecentElements.slice(0, 5);
+        
+        return {
+          ...state,
+          recentElements: limitedRecentElements
+        };
+      }
+    }
+    
     default:
       return state;
   }
@@ -290,6 +329,7 @@ interface BuilderContextType {
   duplicateElement: (elementId: string) => void;
   moveElement: (elementId: string, sourceDropZoneId: string, destinationDropZoneId: string, index?: number) => void;
   setTemplate: (templateId: string) => void;
+  addToRecentElements: (elementType: ElementType) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -393,7 +433,13 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       type: 'ADD_ELEMENT', 
       payload: { element: newElement, dropZoneId } 
     });
-  }, [dispatchWithHistory]);
+    
+    // Also add to recent elements
+    dispatch({
+      type: 'ADD_TO_RECENT_ELEMENTS',
+      payload: { elementType }
+    });
+  }, [dispatchWithHistory, dispatch]);
   
   const updateElement = useCallback((elementId: string, updates: Partial<Element>) => {
     dispatchWithHistory({ 
@@ -462,6 +508,13 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     });
   }, [dispatchWithHistory]);
   
+  const addToRecentElements = useCallback((elementType: ElementType) => {
+    dispatch({
+      type: 'ADD_TO_RECENT_ELEMENTS',
+      payload: { elementType }
+    });
+  }, []);
+  
   const value = {
     state,
     addElement,
@@ -475,6 +528,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     duplicateElement,
     moveElement,
     setTemplate,
+    addToRecentElements,
     undo,
     redo,
     canUndo,

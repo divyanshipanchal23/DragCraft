@@ -12,9 +12,11 @@ import {
   LayoutGrid,
   Video,
   Link,
-  Table
+  Table,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useBuilder } from '../context/BuilderContext';
 
 interface DraggableElementProps {
   type: ElementType;
@@ -22,6 +24,8 @@ interface DraggableElementProps {
 }
 
 export default function DraggableElement({ type, label }: DraggableElementProps) {
+  const { addToRecentElements } = useBuilder();
+  
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'ELEMENT',
     item: { type },

@@ -3,7 +3,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { 
   Heading1, Type, Image, MousePointerClick, Box, Columns2, 
-  FileSpreadsheet, LayoutGrid, Video, Link, Table, Search
+  FileSpreadsheet, LayoutGrid, Video, Link, Table, Search,
+  Clock, History
 } from 'lucide-react';
 import DraggableElement from './DraggableElement';
 import { Separator } from '@/components/ui/separator';
@@ -116,6 +117,38 @@ export default function ElementsToolbox() {
           )}
           
           <div className="space-y-4">
+            {/* Recent Elements */}
+            {!searchQuery && state.recentElements.length > 0 && (
+              <div className="animate-in fade-in duration-300">
+                <h3 className="text-xs uppercase text-gray-500 dark:text-gray-400 font-medium mb-2 flex items-center justify-between">
+                  <span className="flex items-center">
+                    <History className="h-3 w-3 mr-1" />
+                    Recently Used
+                  </span>
+                  <Badge variant="outline" className="ml-2 text-xs font-normal">
+                    {state.recentElements.length}
+                  </Badge>
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {state.recentElements.map((type, index) => (
+                    <div key={`recent-${type}`} className="relative">
+                      <DraggableElement 
+                        type={type} 
+                        label={type.charAt(0).toUpperCase() + type.slice(1)} 
+                      />
+                      <div className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 bg-primary rounded-full text-[10px] text-white font-bold shadow-sm recent-badge">
+                        {index + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {!searchQuery && state.recentElements.length > 0 && (
+              <Separator className="my-2" />
+            )}
+            
             {/* Basic Elements */}
             {filteredElements.basicElements.length > 0 && (
               <div className="animate-in fade-in duration-300">

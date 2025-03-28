@@ -236,4 +236,5 @@ export interface BuilderState {
   isDragging: boolean;
   isPreviewMode: boolean;
   viewMode: 'desktop' | 'tablet' | 'mobile';
+  recentElements: ElementType[];
 }
