@@ -6,8 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Copy, Trash } from 'lucide-react';
-import { ElementType } from '../types/element';
+import { Switch } from '@/components/ui/switch';
+import { X, Copy, Trash, Video, Link as LinkIcon, TableIcon } from 'lucide-react';
+import { ElementType, TextFormatting, ListType, FontSize } from '../types/element';
+import RichTextEditor from './RichTextEditor';
 
 interface PropertiesPanelProps {
   isMobile: boolean;
@@ -49,7 +51,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             value={selectedElement.style.margin} 
             onChange={(e) => {
               updateElement(selectedElement.id, {
-                style: { ...selectedElement.style, margin: parseInt(e.target.value) || 0 }
+                style: { ...selectedElement.style, margin: parseInt(e.target.value) || 0 } as any
               });
             }}
           />
@@ -62,7 +64,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             value={selectedElement.style.padding} 
             onChange={(e) => {
               updateElement(selectedElement.id, {
-                style: { ...selectedElement.style, padding: parseInt(e.target.value) || 0 }
+                style: { ...selectedElement.style, padding: parseInt(e.target.value) || 0 } as any
               });
             }}
           />
@@ -77,14 +79,47 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
         return (
           <>
             <div className="space-y-2">
-              <Label>Text Content</Label>
-              <Textarea 
-                value={textElement.content} 
-                onChange={(e) => {
-                  updateElement(textElement.id, { content: e.target.value });
-                }}
-                rows={3}
-              />
+              <div className="flex items-center justify-between">
+                <Label>Rich Text Editing</Label>
+                <Switch 
+                  checked={textElement.richText}
+                  onCheckedChange={(checked) => {
+                    updateElement(textElement.id, { richText: checked });
+                  }}
+                />
+              </div>
+              
+              {textElement.richText ? (
+                <RichTextEditor 
+                  content={textElement.content}
+                  textFormatting={textElement.textFormatting || {
+                    bold: false,
+                    italic: false,
+                    underline: false,
+                    strikethrough: false,
+                    subscript: false,
+                    superscript: false
+                  }}
+                  listType={textElement.type === 'paragraph' ? (textElement.listType || 'none') : undefined}
+                  onContentChange={(newContent) => {
+                    updateElement(textElement.id, { content: newContent });
+                  }}
+                  onFormattingChange={(newFormatting) => {
+                    updateElement(textElement.id, { textFormatting: newFormatting });
+                  }}
+                  onListTypeChange={textElement.type === 'paragraph' ? (listType) => {
+                    updateElement(textElement.id, { listType });
+                  } : undefined}
+                />
+              ) : (
+                <Textarea 
+                  value={textElement.content} 
+                  onChange={(e) => {
+                    updateElement(textElement.id, { content: e.target.value });
+                  }}
+                  rows={3}
+                />
+              )}
             </div>
             
             <div className="space-y-2">
@@ -93,7 +128,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 value={textElement.style.fontSize}
                 onValueChange={(value) => {
                   updateElement(textElement.id, {
-                    style: { ...textElement.style, fontSize: value }
+                    style: { ...textElement.style, fontSize: value as FontSize }
                   });
                 }}
               >
@@ -419,6 +454,495 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
         );
       }
       
+      case 'video': {
+        const videoElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Video URL (YouTube, Vimeo, etc.)</Label>
+              <Input 
+                type="text" 
+                value={videoElement.src} 
+                onChange={(e) => {
+                  updateElement(videoElement.id, { src: e.target.value });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input 
+                type="text" 
+                value={videoElement.title} 
+                onChange={(e) => {
+                  updateElement(videoElement.id, { title: e.target.value });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-4 my-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="autoplay">Autoplay</Label>
+                <Switch 
+                  id="autoplay"
+                  checked={videoElement.autoplay} 
+                  onCheckedChange={(checked) => {
+                    updateElement(videoElement.id, { autoplay: checked });
+                  }}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label htmlFor="controls">Show Controls</Label>
+                <Switch 
+                  id="controls"
+                  checked={videoElement.controls} 
+                  onCheckedChange={(checked) => {
+                    updateElement(videoElement.id, { controls: checked });
+                  }}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label htmlFor="loop">Loop</Label>
+                <Switch 
+                  id="loop"
+                  checked={videoElement.loop} 
+                  onCheckedChange={(checked) => {
+                    updateElement(videoElement.id, { loop: checked });
+                  }}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label htmlFor="muted">Muted</Label>
+                <Switch 
+                  id="muted"
+                  checked={videoElement.muted} 
+                  onCheckedChange={(checked) => {
+                    updateElement(videoElement.id, { muted: checked });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Width</Label>
+              <Input 
+                type="text" 
+                value={videoElement.style.width} 
+                onChange={(e) => {
+                  updateElement(videoElement.id, {
+                    style: { ...videoElement.style, width: e.target.value }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Radius</Label>
+              <Input 
+                type="number" 
+                value={videoElement.style.borderRadius} 
+                onChange={(e) => {
+                  updateElement(videoElement.id, {
+                    style: { ...videoElement.style, borderRadius: parseInt(e.target.value) || 0 }
+                  });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Alignment</Label>
+              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(videoElement.id, {
+                      style: { ...videoElement.style, alignment: 'left' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </Button>
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(videoElement.id, {
+                      style: { ...videoElement.style, alignment: 'center' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6h12M9 12h12M9 18h12" />
+                  </svg>
+                </Button>
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${videoElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(videoElement.id, {
+                      style: { ...videoElement.style, alignment: 'right' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h12M4 12h12M4 18h12" />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
+      
+      case 'link': {
+        const linkElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Link Text</Label>
+              <Input 
+                type="text" 
+                value={linkElement.content} 
+                onChange={(e) => {
+                  updateElement(linkElement.id, { content: e.target.value });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>URL</Label>
+              <Input 
+                type="text" 
+                value={linkElement.href} 
+                onChange={(e) => {
+                  updateElement(linkElement.id, { href: e.target.value });
+                }}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Open In</Label>
+              <Select 
+                value={linkElement.target}
+                onValueChange={(value: '_self' | '_blank' | '_parent' | '_top') => {
+                  updateElement(linkElement.id, { target: value });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select target" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_self">Same Window</SelectItem>
+                  <SelectItem value="_blank">New Window</SelectItem>
+                  <SelectItem value="_parent">Parent Frame</SelectItem>
+                  <SelectItem value="_top">Top Frame</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Text Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={linkElement.style.color}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(linkElement.id, {
+                      style: { ...linkElement.style, color: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={linkElement.style.color}
+                  onChange={(e) => {
+                    updateElement(linkElement.id, {
+                      style: { ...linkElement.style, color: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Text Decoration</Label>
+              <Select 
+                value={linkElement.style.textDecoration}
+                onValueChange={(value) => {
+                  updateElement(linkElement.id, { 
+                    style: { ...linkElement.style, textDecoration: value } 
+                  });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select decoration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="underline">Underline</SelectItem>
+                  <SelectItem value="overline">Overline</SelectItem>
+                  <SelectItem value="line-through">Line Through</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Font Size</Label>
+              <Select 
+                value={linkElement.style.fontSize}
+                onValueChange={(value) => {
+                  updateElement(linkElement.id, {
+                    style: { ...linkElement.style, fontSize: value }
+                  });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">Small</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="large">Large</SelectItem>
+                  <SelectItem value="extra-large">Extra Large</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Alignment</Label>
+              <div className="flex border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300">
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'left' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(linkElement.id, {
+                      style: { ...linkElement.style, alignment: 'left' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </Button>
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'center' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(linkElement.id, {
+                      style: { ...linkElement.style, alignment: 'center' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 6h12M9 12h12M9 18h12" />
+                  </svg>
+                </Button>
+                <Button 
+                  variant="ghost"
+                  className={`flex-1 py-1 ${linkElement.style.alignment === 'right' ? 'bg-gray-100' : 'bg-white'}`}
+                  onClick={() => {
+                    updateElement(linkElement.id, {
+                      style: { ...linkElement.style, alignment: 'right' }
+                    });
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h12M4 12h12M4 18h12" />
+                  </svg>
+                </Button>
+              </div>
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
+      
+      case 'table': {
+        const tableElement = selectedElement as any;
+        return (
+          <>
+            <div className="space-y-2">
+              <Label>Rows</Label>
+              <Input 
+                type="number" 
+                value={tableElement.rows} 
+                onChange={(e) => {
+                  const rows = parseInt(e.target.value) || 2;
+                  // Update data array if rows increased
+                  let newData = [...tableElement.data];
+                  if (rows > tableElement.data.length) {
+                    // Add new rows
+                    const colsCount = tableElement.columns;
+                    for (let i = tableElement.data.length; i < rows; i++) {
+                      newData.push(Array(colsCount).fill('').map((_, j) => `Row ${i+1}, Cell ${j+1}`));
+                    }
+                  } else if (rows < tableElement.data.length) {
+                    // Remove rows
+                    newData = newData.slice(0, rows);
+                  }
+                  
+                  updateElement(tableElement.id, { 
+                    rows,
+                    data: newData
+                  });
+                }}
+                min={1}
+                max={20}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Columns</Label>
+              <Input 
+                type="number" 
+                value={tableElement.columns} 
+                onChange={(e) => {
+                  const columns = parseInt(e.target.value) || 2;
+                  
+                  // Update headers array
+                  let newHeaders = [...tableElement.headers];
+                  if (columns > tableElement.headers.length) {
+                    // Add new headers
+                    for (let i = tableElement.headers.length; i < columns; i++) {
+                      newHeaders.push(`Header ${i+1}`);
+                    }
+                  } else if (columns < tableElement.headers.length) {
+                    // Remove headers
+                    newHeaders = newHeaders.slice(0, columns);
+                  }
+                  
+                  // Update data array
+                  const newData = tableElement.data.map((row: string[]) => {
+                    if (columns > row.length) {
+                      // Add new cells
+                      const newRow = [...row];
+                      for (let i = row.length; i < columns; i++) {
+                        newRow.push(`Cell ${i+1}`);
+                      }
+                      return newRow;
+                    } else if (columns < row.length) {
+                      // Remove cells
+                      return row.slice(0, columns);
+                    }
+                    return row;
+                  });
+                  
+                  updateElement(tableElement.id, { 
+                    columns,
+                    headers: newHeaders,
+                    data: newData
+                  });
+                }}
+                min={1}
+                max={10}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Header Background</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={tableElement.style.headerBackgroundColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, headerBackgroundColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={tableElement.style.headerBackgroundColor}
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, headerBackgroundColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Header Text Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={tableElement.style.headerTextColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, headerTextColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={tableElement.style.headerTextColor}
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, headerTextColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Width</Label>
+              <Input 
+                type="number" 
+                value={tableElement.style.borderWidth}
+                onChange={(e) => {
+                  updateElement(tableElement.id, {
+                    style: { ...tableElement.style, borderWidth: parseInt(e.target.value) || 0 }
+                  });
+                }}
+                min={0}
+                max={10}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Border Color</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  type="color" 
+                  value={tableElement.style.borderColor}
+                  className="w-12 h-8 p-1"
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, borderColor: e.target.value }
+                    });
+                  }}
+                />
+                <Input 
+                  type="text" 
+                  value={tableElement.style.borderColor}
+                  onChange={(e) => {
+                    updateElement(tableElement.id, {
+                      style: { ...tableElement.style, borderColor: e.target.value }
+                    });
+                  }}
+                />
+              </div>
+            </div>
+            
+            {commonProps}
+          </>
+        );
+      }
+      
       default:
         return commonProps;
     }
@@ -435,6 +959,9 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
       case 'two-column': return 'Two Column Layout';
       case 'form': return 'Form';
       case 'gallery': return 'Gallery';
+      case 'video': return 'Video';
+      case 'link': return 'Link';
+      case 'table': return 'Table';
       default: return 'Element';
     }
   };

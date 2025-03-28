@@ -1,5 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Element, ElementType, DropZone, Template } from '../types/element';
+import { 
+  Element, 
+  ElementType, 
+  DropZone, 
+  Template, 
+  BuilderState,
+  VideoElement,
+  LinkElement,
+  TableElement,
+  FontWeight 
+} from '../types/element';
 
 export const createElementId = () => uuidv4();
 
@@ -17,7 +27,10 @@ export const getElementsToolboxItems = () => {
     'container',
     'two-column',
     'form',
-    'gallery'
+    'gallery',
+    'video',
+    'link',
+    'table'
   ];
   
   return types;
@@ -45,6 +58,15 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
         ...baseElement,
         type: 'heading',
         content: 'New Heading',
+        richText: false,
+        textFormatting: {
+          bold: true,
+          italic: false,
+          underline: false,
+          strikethrough: false,
+          subscript: false,
+          superscript: false
+        },
         style: {
           ...baseElement.style,
           fontSize: 'large',
@@ -59,6 +81,16 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
         ...baseElement,
         type: 'paragraph',
         content: 'New paragraph text. Click to edit content.',
+        richText: false,
+        textFormatting: {
+          bold: false,
+          italic: false,
+          underline: false,
+          strikethrough: false,
+          subscript: false,
+          superscript: false
+        },
+        listType: 'none',
         style: {
           ...baseElement.style,
           fontSize: 'medium',
@@ -93,7 +125,7 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           backgroundColor: '#3B82F6',
           color: '#FFFFFF',
           fontSize: 'medium',
-          fontWeight: 'medium',
+          fontWeight: 'normal',
           borderRadius: 4,
           alignment: 'center'
         }
@@ -193,6 +225,66 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           gap: 16
         }
       };
+      
+    case 'video':
+      return {
+        ...baseElement,
+        type: 'video',
+        src: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        title: 'Video Title',
+        autoplay: false,
+        controls: true,
+        loop: false,
+        muted: false,
+        style: {
+          ...baseElement.style,
+          width: '100%',
+          height: 'auto',
+          borderRadius: 4,
+          alignment: 'center'
+        }
+      };
+      
+    case 'link':
+      return {
+        ...baseElement,
+        type: 'link',
+        content: 'Click Here',
+        href: 'https://www.example.com',
+        target: '_blank',
+        style: {
+          ...baseElement.style,
+          color: '#3B82F6',
+          fontSize: 'medium',
+          fontWeight: 'normal',
+          textDecoration: 'underline',
+          alignment: 'left'
+        }
+      };
+      
+    case 'table':
+      return {
+        ...baseElement,
+        type: 'table',
+        rows: 3,
+        columns: 3,
+        headers: ['Header 1', 'Header 2', 'Header 3'],
+        data: [
+          ['Row 1, Cell 1', 'Row 1, Cell 2', 'Row 1, Cell 3'],
+          ['Row 2, Cell 1', 'Row 2, Cell 2', 'Row 2, Cell 3']
+        ],
+        style: {
+          ...baseElement.style,
+          borderWidth: 1,
+          borderColor: '#E5E7EB',
+          headerBackgroundColor: '#F3F4F6',
+          headerTextColor: '#111827',
+          rowBackgroundColor: '#FFFFFF',
+          rowTextColor: '#4B5563',
+          fontSize: 'small',
+          width: '100%'
+        }
+      };
     
     default:
       return baseElement as any;
@@ -222,6 +314,15 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
     parentId: mainContentLeftDropZoneId,
     position: { x: 0, y: 0 },
     content: 'Welcome to Your Website',
+    richText: false,
+    textFormatting: {
+      bold: true,
+      italic: false,
+      underline: false,
+      strikethrough: false,
+      subscript: false,
+      superscript: false
+    },
     style: {
       margin: 16,
       padding: 8,
@@ -239,6 +340,16 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
     parentId: mainContentLeftDropZoneId,
     position: { x: 0, y: 0 },
     content: 'Easily build your website using our drag-and-drop interface. Add text, images, buttons, and more to create a stunning website.',
+    richText: false,
+    textFormatting: {
+      bold: false,
+      italic: false,
+      underline: false,
+      strikethrough: false,
+      subscript: false,
+      superscript: false
+    },
+    listType: 'none',
     style: {
       margin: 16,
       padding: 8,
@@ -280,7 +391,7 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
       backgroundColor: '#3B82F6',
       color: '#FFFFFF',
       fontSize: 'medium',
-      fontWeight: 'medium',
+      fontWeight: 'normal',
       borderRadius: 4,
       alignment: 'center'
     }

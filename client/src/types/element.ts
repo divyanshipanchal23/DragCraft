@@ -6,7 +6,10 @@ export type ElementType =
   | 'container' 
   | 'two-column' 
   | 'form' 
-  | 'gallery';
+  | 'gallery'
+  | 'video'
+  | 'link'
+  | 'table';
 
 export type ElementAlignment = 'left' | 'center' | 'right';
 export type FontWeight = 'light' | 'normal' | 'bold';
@@ -29,6 +32,8 @@ export interface BaseElementData {
 export interface HeadingElement extends BaseElementData {
   type: 'heading';
   content: string;
+  richText: boolean;
+  textFormatting?: TextFormatting;
   style: BaseElementData['style'] & {
     fontSize: FontSize;
     fontWeight: FontWeight;
@@ -40,6 +45,9 @@ export interface HeadingElement extends BaseElementData {
 export interface ParagraphElement extends BaseElementData {
   type: 'paragraph';
   content: string;
+  richText: boolean;
+  textFormatting?: TextFormatting;
+  listType?: ListType;
   style: BaseElementData['style'] & {
     fontSize: FontSize;
     fontWeight: FontWeight;
@@ -128,6 +136,71 @@ export interface GalleryElement extends BaseElementData {
   };
 }
 
+export interface VideoElement extends BaseElementData {
+  type: 'video';
+  src: string;
+  title: string;
+  autoplay: boolean;
+  controls: boolean;
+  loop: boolean;
+  muted: boolean;
+  style: BaseElementData['style'] & {
+    width: string;
+    height: string;
+    borderRadius: number;
+    alignment: ElementAlignment;
+  };
+}
+
+export interface LinkElement extends BaseElementData {
+  type: 'link';
+  content: string;
+  href: string;
+  target: '_self' | '_blank' | '_parent' | '_top';
+  style: BaseElementData['style'] & {
+    color: string;
+    fontSize: FontSize;
+    fontWeight: FontWeight;
+    textDecoration: 'none' | 'underline' | 'overline' | 'line-through';
+    alignment: ElementAlignment;
+  };
+}
+
+export interface TableElement extends BaseElementData {
+  type: 'table';
+  rows: number;
+  columns: number;
+  headers: string[];
+  data: string[][];
+  style: BaseElementData['style'] & {
+    borderWidth: number;
+    borderColor: string;
+    headerBackgroundColor: string;
+    headerTextColor: string;
+    rowBackgroundColor: string;
+    rowTextColor: string;
+    fontSize: FontSize;
+    width: string;
+  };
+}
+
+// Add text style related types for rich text editing
+export type TextFormatting = {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  strikethrough: boolean;
+  subscript: boolean;
+  superscript: boolean;
+};
+
+export type TextContent = {
+  text: string;
+  format?: TextFormatting;
+};
+
+export type ListType = 'none' | 'ordered' | 'unordered';
+
 export type Element = 
   | HeadingElement 
   | ParagraphElement 
@@ -136,7 +209,10 @@ export type Element =
   | ContainerElement 
   | TwoColumnElement 
   | FormElement 
-  | GalleryElement;
+  | GalleryElement
+  | VideoElement
+  | LinkElement
+  | TableElement;
 
 export interface DropZone {
   id: string;
