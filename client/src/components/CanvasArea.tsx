@@ -1,12 +1,12 @@
-import { useDrop } from 'react-dnd';
 import { useBuilder } from '../context/BuilderContext';
 import DropZone from './DropZone';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ElementType } from '../types/element';
 import { defaultTemplateId, template2Id, template3Id } from '../utils/element-templates';
+import { Laptop, Tablet, Smartphone } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export default function CanvasArea() {
-  const { state, addElement, setTemplate } = useBuilder();
+  const { state, setTemplate } = useBuilder();
   const { isPreviewMode, viewMode } = state;
   
   // Get the current template
@@ -30,6 +30,15 @@ export default function CanvasArea() {
     }
   };
   
+  // Get template name
+  const getTemplateName = () => {
+    switch (state.currentTemplateId) {
+      case template2Id: return 'Portfolio Template';
+      case template3Id: return 'Business Template';
+      default: return 'Basic Template';
+    }
+  };
+  
   // Handle template change
   const handleTemplateChange = (value: string) => {
     switch (value) {
@@ -44,13 +53,27 @@ export default function CanvasArea() {
     }
   };
   
+  // Get device icon
+  const getDeviceIcon = () => {
+    switch (viewMode) {
+      case 'mobile': return <Smartphone className="h-5 w-5" />;
+      case 'tablet': return <Tablet className="h-5 w-5" />;
+      default: return <Laptop className="h-5 w-5" />;
+    }
+  };
+  
   return (
-    <div className="flex-1 overflow-y-auto relative bg-gray-50">
-      {/* Template Header */}
-      <div className="bg-white p-4 border-b border-gray-200 shadow-sm flex justify-between items-center">
-        <h2 className="font-medium">Canvas</h2>
-        {!isPreviewMode && (
-          <div className="hidden md:flex space-x-2">
+    <div className="flex-1 overflow-y-auto relative bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Canvas Header */}
+      {!isPreviewMode && (
+        <div className="bg-white p-3 border-b border-gray-200 shadow-sm flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <h2 className="font-medium text-gray-800">Canvas</h2>
+            <Badge variant="outline" className="ml-2 font-normal">
+              {getTemplateName()}
+            </Badge>
+          </div>
+          <div className="flex space-x-2">
             <Select 
               value={getTemplateValue()} 
               onValueChange={handleTemplateChange}
@@ -59,25 +82,36 @@ export default function CanvasArea() {
                 <SelectValue placeholder="Select template" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Template 1">Template 1</SelectItem>
-                <SelectItem value="Template 2">Template 2</SelectItem>
-                <SelectItem value="Template 3">Template 3</SelectItem>
+                <SelectItem value="Template 1">Basic Template</SelectItem>
+                <SelectItem value="Template 2">Portfolio Template</SelectItem>
+                <SelectItem value="Template 3">Business Template</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       
-      {/* Canvas with grid background */}
-      <div className={`p-4 ${!isPreviewMode ? 'grid-guide' : ''}`} id="canvas-dropzone">
-        <div className={`${getContainerClass()} mx-auto min-h-screen bg-white shadow-md border border-gray-200 rounded-md overflow-hidden`}>
+      {/* Canvas with background */}
+      <div className="p-6 min-h-[calc(100vh-120px)] flex flex-col items-center">
+        {/* Device viewport indicator */}
+        <div className="sticky top-4 z-10 mb-4">
+          <Badge variant="secondary" className="px-3 py-1 text-xs">
+            {getDeviceIcon()}
+            <span className="ml-1.5">
+              {viewMode === 'mobile' ? 'Mobile View' : 
+               viewMode === 'tablet' ? 'Tablet View' : 'Desktop View'}
+            </span>
+          </Badge>
+        </div>
+        
+        {/* Device frame with website content */}
+        <div className={`${getContainerClass()} mx-auto bg-white shadow-md border border-gray-200 rounded overflow-hidden`}>
           {/* Template Structure */}
           {currentTemplate && (
             <>
               {currentTemplate.id === defaultTemplateId && (
                 <>
                   <header className="relative p-8 bg-gray-100 border-b border-gray-200 text-center">
-                    {/* Header drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[0].id} 
                       className="min-h-[120px] flex items-center justify-center" 
@@ -86,16 +120,13 @@ export default function CanvasArea() {
                   </header>
                   
                   <main className="p-8">
-                    {/* Main content area with grid layout */}
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
-                      {/* Left column */}
                       <DropZone 
                         id={currentTemplate.dropZones[1].id} 
                         className="min-h-[200px] flex flex-col justify-center p-4" 
                         placeholderText="Drag and drop content elements here"
                       />
                       
-                      {/* Right column */}
                       <DropZone 
                         id={currentTemplate.dropZones[2].id} 
                         className="min-h-[200px] flex items-center justify-center p-4" 
@@ -103,14 +134,12 @@ export default function CanvasArea() {
                       />
                     </div>
                     
-                    {/* Second row */}
                     <DropZone 
                       id={currentTemplate.dropZones[3].id} 
                       className="min-h-[120px] flex items-center justify-center p-4 mb-8" 
                       placeholderText="Drag and drop elements here"
                     />
                     
-                    {/* Third row */}
                     <DropZone 
                       id={currentTemplate.dropZones[4].id} 
                       className="min-h-[150px] flex items-center justify-center" 
@@ -119,7 +148,6 @@ export default function CanvasArea() {
                   </main>
                   
                   <footer className="p-8 bg-gray-800 text-white">
-                    {/* Footer drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[5].id} 
                       className="min-h-[100px] flex items-center justify-center" 
@@ -132,7 +160,6 @@ export default function CanvasArea() {
               {currentTemplate.id === template2Id && (
                 <>
                   <header className="relative p-12 bg-blue-600 border-b border-gray-200 text-center">
-                    {/* Hero drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[0].id} 
                       className="min-h-[200px] flex flex-col items-center justify-center" 
@@ -141,7 +168,6 @@ export default function CanvasArea() {
                   </header>
                   
                   <section className="p-8 bg-white">
-                    {/* About drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[1].id} 
                       className="min-h-[150px] flex flex-col items-center justify-center p-4 mb-8" 
@@ -150,7 +176,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <section className="p-8 bg-gray-50">
-                    {/* Portfolio drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[2].id} 
                       className="min-h-[400px] flex flex-col items-center justify-center p-4 mb-8" 
@@ -159,7 +184,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <section className="p-8 bg-white">
-                    {/* Contact drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[3].id} 
                       className="min-h-[250px] flex flex-col items-center justify-center p-4 mb-8" 
@@ -168,7 +192,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <footer className="p-8 bg-gray-800 text-white">
-                    {/* Footer drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[4].id} 
                       className="min-h-[100px] flex items-center justify-center" 
@@ -181,7 +204,6 @@ export default function CanvasArea() {
               {currentTemplate.id === template3Id && (
                 <>
                   <header className="relative p-4 bg-white border-b border-gray-200">
-                    {/* Header drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[0].id} 
                       className="min-h-[60px] flex items-center" 
@@ -190,7 +212,6 @@ export default function CanvasArea() {
                   </header>
                   
                   <section className="p-12 bg-gray-50 text-center">
-                    {/* Hero drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[1].id} 
                       className="min-h-[200px] flex flex-col items-center justify-center p-4" 
@@ -199,7 +220,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <section className="p-12 bg-white">
-                    {/* Features drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[2].id} 
                       className="min-h-[150px] flex flex-col items-center justify-center p-4 mb-8" 
@@ -208,7 +228,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <section className="p-12 bg-gray-50">
-                    {/* Pricing drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[3].id} 
                       className="min-h-[250px] flex flex-col items-center justify-center p-4" 
@@ -217,7 +236,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <section className="p-12 bg-blue-600 text-white">
-                    {/* CTA drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[4].id} 
                       className="min-h-[150px] flex flex-col items-center justify-center p-4" 
@@ -226,7 +244,6 @@ export default function CanvasArea() {
                   </section>
                   
                   <footer className="p-8 bg-gray-800 text-white">
-                    {/* Footer drop zone */}
                     <DropZone 
                       id={currentTemplate.dropZones[5].id} 
                       className="min-h-[100px] flex items-center justify-center" 
