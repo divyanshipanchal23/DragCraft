@@ -17,7 +17,6 @@ export default function ElementsToolbox() {
   
   // Group elements by category
   const basicElements: ElementType[] = ['heading', 'paragraph', 'image', 'button', 'link'];
-  const layoutElements: ElementType[] = ['container', 'two-column'];
   const mediaElements: ElementType[] = ['video', 'table'];
   const componentElements: ElementType[] = ['form', 'gallery'];
   
@@ -39,17 +38,6 @@ export default function ElementsToolbox() {
                 <DraggableElement type="image" label="Image" />
                 <DraggableElement type="button" label="Button" />
                 <DraggableElement type="link" label="Link" />
-              </div>
-            </div>
-            
-            <Separator />
-            
-            {/* Layouts */}
-            <div>
-              <h3 className="text-xs uppercase text-gray-500 font-medium mb-2">Layouts</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <DraggableElement type="container" label="Container" />
-                <DraggableElement type="two-column" label="Two Column" />
               </div>
             </div>
             

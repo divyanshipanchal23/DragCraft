@@ -249,6 +249,37 @@ export default function PlacedElement({ id }: PlacedElementProps) {
         );
         
       case 'video':
+        // Process YouTube URL to support autoplay, controls, loop, and muted
+        const videoElement = element as any;
+        let videoSrc = videoElement.src;
+        
+        // If it's a YouTube URL, add parameters for controls
+        if (videoSrc.includes('youtube.com/') || videoSrc.includes('youtu.be/')) {
+          // Extract the base URL and add parameters
+          const hasParams = videoSrc.includes('?');
+          const paramPrefix = hasParams ? '&' : '?';
+          
+          // Add controls parameter (1=show, 0=hide)
+          if (!videoSrc.includes('controls=')) {
+            videoSrc += `${paramPrefix}controls=${videoElement.controls ? '1' : '0'}`;
+          }
+          
+          // Add autoplay parameter
+          if (!videoSrc.includes('autoplay=')) {
+            videoSrc += `&autoplay=${videoElement.autoplay ? '1' : '0'}`;
+          }
+          
+          // Add loop parameter
+          if (!videoSrc.includes('loop=')) {
+            videoSrc += `&loop=${videoElement.loop ? '1' : '0'}`;
+          }
+          
+          // Add mute parameter
+          if (!videoSrc.includes('mute=')) {
+            videoSrc += `&mute=${videoElement.muted ? '1' : '0'}`;
+          }
+        }
+        
         return (
           <div
             style={{
@@ -258,16 +289,16 @@ export default function PlacedElement({ id }: PlacedElementProps) {
             }}
           >
             <iframe
-              src={element.src}
-              title={element.title}
-              width={element.style.width}
+              src={videoSrc}
+              title={videoElement.title}
+              width={videoElement.style.width}
               height="315"
               style={{
-                borderRadius: `${element.style.borderRadius}px`
+                borderRadius: `${videoElement.style.borderRadius}px`
               }}
               allowFullScreen
               frameBorder="0"
-              allow={`accelerometer; ${element.autoplay ? 'autoplay; ' : ''}clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
+              allow={`accelerometer; ${videoElement.autoplay ? 'autoplay; ' : ''}clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
             ></iframe>
           </div>
         );

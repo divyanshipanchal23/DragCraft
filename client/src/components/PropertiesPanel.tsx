@@ -938,6 +938,54 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
               </div>
             </div>
             
+            {/* Table Headers Editor */}
+            <div className="space-y-2 mt-4">
+              <Label>Edit Table Headers</Label>
+              <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto p-2 border rounded">
+                {tableElement.headers.map((header, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Input 
+                      value={header}
+                      onChange={(e) => {
+                        const newHeaders = [...tableElement.headers];
+                        newHeaders[index] = e.target.value;
+                        updateElement(tableElement.id, { headers: newHeaders });
+                      }}
+                      placeholder={`Header ${index+1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Table Cells Editor */}
+            <div className="space-y-2 mt-4">
+              <Label>Edit Table Cells</Label>
+              <div className="max-h-60 overflow-y-auto p-2 border rounded">
+                {tableElement.data.map((row, rowIndex) => (
+                  <div key={rowIndex} className="mb-2">
+                    <div className="text-xs text-gray-500 mb-1">Row {rowIndex+1}</div>
+                    <div className="grid grid-cols-1 gap-2">
+                      {row.map((cell, cellIndex) => (
+                        <div key={cellIndex} className="flex items-center space-x-2">
+                          <div className="text-xs text-gray-500 w-12">Col {cellIndex+1}</div>
+                          <Input 
+                            value={cell}
+                            onChange={(e) => {
+                              const newData = [...tableElement.data];
+                              newData[rowIndex][cellIndex] = e.target.value;
+                              updateElement(tableElement.id, { data: newData });
+                            }}
+                            placeholder={`Row ${rowIndex+1}, Cell ${cellIndex+1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
             {commonProps}
           </>
         );
