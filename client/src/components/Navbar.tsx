@@ -61,7 +61,7 @@ export default function Navbar() {
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
           <BookTemplate className="h-6 w-6 mr-2 text-primary" />
-          <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold text-primary">
             Website Builder
           </h1>
         </div>
@@ -167,7 +167,7 @@ export default function Navbar() {
           </DropdownMenu>
         )}
         
-        <Button variant="default" size="sm" className="h-9 px-4 bg-gradient-to-r from-primary to-purple-500 hover:from-primary hover:to-purple-600 transition-all" onClick={handleSave}>
+        <Button variant="default" size="sm" className="h-9 px-4 bg-primary hover:bg-primary/90 transition-all" onClick={handleSave}>
           <Save className="h-4 w-4 mr-2" />
           Save Website
         </Button>
@@ -247,7 +247,7 @@ export default function Navbar() {
             </Button>
           </div>
           
-          <Button variant="default" className="w-full mt-2 bg-gradient-to-r from-primary to-purple-500" onClick={handleSave}>
+          <Button variant="default" className="w-full mt-2 bg-primary hover:bg-primary/90" onClick={handleSave}>
             <Save className="h-4 w-4 mr-2" />
             Save Website
           </Button>

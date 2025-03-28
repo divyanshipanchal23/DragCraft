@@ -1,13 +1,45 @@
 import { useBuilder } from '../context/BuilderContext';
 import DropZone from './DropZone';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { defaultTemplateId, template2Id, template3Id } from '../utils/element-templates';
-import { Laptop, Tablet, Smartphone } from 'lucide-react';
+import { Laptop, Tablet, Smartphone, Zap, Info, Hand, MousePointer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function CanvasArea() {
   const { state, setTemplate } = useBuilder();
   const { isPreviewMode, viewMode } = state;
+  const [showControlsTip, setShowControlsTip] = useState(false);
+  const [showFirstTimeTips, setShowFirstTimeTips] = useState(true);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(true);
+  
+  // Show tips briefly when entering edit mode
+  useEffect(() => {
+    if (!isPreviewMode) {
+      setShowControlsTip(true);
+      const timer = setTimeout(() => {
+        setShowControlsTip(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isPreviewMode]);
+  
+  // Check if it's the first time opening the editor
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcomeGuide');
+    if (hasSeenWelcome) {
+      setShowWelcomeDialog(false);
+    }
+  }, []);
   
   // Get the current template
   const currentTemplate = state.templates.find(t => t.id === state.currentTemplateId);
@@ -62,8 +94,64 @@ export default function CanvasArea() {
     }
   };
   
+  // Handle the welcome dialog closing
+  const closeWelcomeDialog = () => {
+    setShowWelcomeDialog(false);
+    localStorage.setItem('hasSeenWelcomeGuide', 'true');
+  };
+  
   return (
     <div className="flex-1 overflow-y-auto relative bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Welcome Dialog for first-time users */}
+      <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">Welcome to Website Builder!</DialogTitle>
+            <DialogDescription className="text-center">
+              Create beautiful websites with our easy-to-use drag-and-drop editor
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col items-center p-4 bg-primary/5 rounded-lg">
+              <div className="rounded-full bg-primary/10 p-3 mb-3">
+                <Hand className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-medium mb-1">Drag & Drop Editor</h3>
+              <p className="text-sm text-center text-gray-600">
+                Simply drag elements from the toolbox onto your canvas to build your website.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col items-center p-3 bg-primary/5 rounded-lg">
+                <div className="rounded-full bg-primary/10 p-2 mb-2">
+                  <MousePointer className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="text-sm font-medium mb-1">Easy Customization</h3>
+                <p className="text-xs text-center text-gray-600">
+                  Click any element to customize its appearance and content.
+                </p>
+              </div>
+              
+              <div className="flex flex-col items-center p-3 bg-primary/5 rounded-lg">
+                <div className="rounded-full bg-primary/10 p-2 mb-2">
+                  <Laptop className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="text-sm font-medium mb-1">Responsive Preview</h3>
+                <p className="text-xs text-center text-gray-600">
+                  Check how your site looks on different devices with our preview modes.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <Button onClick={closeWelcomeDialog} className="w-full">
+            Get Started
+          </Button>
+        </DialogContent>
+      </Dialog>
+      
       {/* Canvas Header */}
       {!isPreviewMode && (
         <div className="bg-white p-3 border-b border-gray-200 shadow-sm flex justify-between items-center">
@@ -73,28 +161,13 @@ export default function CanvasArea() {
               {getTemplateName()}
             </Badge>
           </div>
-          <div className="flex space-x-2">
-            <Select 
-              value={getTemplateValue()} 
-              onValueChange={handleTemplateChange}
-            >
-              <SelectTrigger className="text-xs h-8 w-36">
-                <SelectValue placeholder="Select template" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Template 1">Basic Template</SelectItem>
-                <SelectItem value="Template 2">Portfolio Template</SelectItem>
-                <SelectItem value="Template 3">Business Template</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       )}
       
       {/* Canvas with background */}
       <div className="p-6 min-h-[calc(100vh-120px)] flex flex-col items-center">
-        {/* Device viewport indicator */}
-        <div className="sticky top-4 z-10 mb-4">
+        {/* Device viewport indicator + Help */}
+        <div className="sticky top-4 z-10 mb-4 flex justify-center items-center gap-3">
           <Badge variant="secondary" className="px-3 py-1 text-xs">
             {getDeviceIcon()}
             <span className="ml-1.5">
@@ -102,10 +175,99 @@ export default function CanvasArea() {
                viewMode === 'tablet' ? 'Tablet View' : 'Desktop View'}
             </span>
           </Badge>
+          
+          {/* Help tooltip */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" className="h-7 w-7 rounded-full">
+                  <Info className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-[250px]">
+                <p className="text-xs">In {viewMode} view, your content is shown as it would appear on a {viewMode} device.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         
+        {/* Editor tips - only shown in edit mode */}
+        {!isPreviewMode && showControlsTip && (
+          <div className="absolute top-20 right-4 z-30 bg-white/95 border border-primary/20 shadow-lg rounded-lg p-3 max-w-[250px] text-sm animate-in fade-in slide-in-from-right-5 duration-500">
+            <div className="flex items-start gap-2">
+              <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-gray-800 mb-1">Quick Tip</p>
+                <p className="text-xs text-gray-600 leading-snug">
+                  Drag elements from the toolbox and drop them into any drop zone. 
+                  Click any element to edit its properties.
+                </p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full mt-2 text-xs h-7"
+              onClick={() => setShowControlsTip(false)}
+            >
+              Got it
+            </Button>
+          </div>
+        )}
+        
+        {/* Help dialog trigger */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="absolute bottom-4 right-4 z-20 bg-white/80 backdrop-blur-sm shadow-sm"
+            >
+              <Info className="h-4 w-4 mr-1.5" />
+              How it works
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Website Builder Guide</DialogTitle>
+              <DialogDescription>
+                Learn how to use the drag-and-drop website builder
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              <div className="flex gap-3 items-start">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <Hand className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Drag and Drop</h3>
+                  <p className="text-sm text-gray-600">Drag elements from the toolbox on the left and drop them into highlighted zones.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <MousePointer className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Edit Properties</h3>
+                  <p className="text-sm text-gray-600">Click on any element to select it and edit its properties in the right panel.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <Laptop className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Preview Modes</h3>
+                  <p className="text-sm text-gray-600">Toggle between desktop, tablet, and mobile views to see how your site looks on different devices.</p>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+        
         {/* Device frame with website content */}
-        <div className={`${getContainerClass()} mx-auto bg-white shadow-md border border-gray-200 rounded overflow-hidden`}>
+        <div className={`relative ${getContainerClass()} mx-auto bg-white shadow-md border border-gray-200 rounded overflow-hidden`}>
           {/* Template Structure */}
           {currentTemplate && (
             <>
