@@ -247,6 +247,117 @@ export default function PlacedElement({ id }: PlacedElementProps) {
             ))}
           </div>
         );
+        
+      case 'video':
+        return (
+          <div
+            style={{
+              margin: `${element.style.margin}px 0`,
+              padding: `${element.style.padding}px`,
+              textAlign: getTextAlignment(element.style.alignment)
+            }}
+          >
+            <iframe
+              src={element.src}
+              title={element.title}
+              width={element.style.width}
+              height="315"
+              style={{
+                borderRadius: `${element.style.borderRadius}px`
+              }}
+              allowFullScreen
+              frameBorder="0"
+              allow={`accelerometer; ${element.autoplay ? 'autoplay; ' : ''}clipboard-write; encrypted-media; gyroscope; picture-in-picture`}
+            ></iframe>
+          </div>
+        );
+        
+      case 'link':
+        return (
+          <a
+            href={element.href}
+            target={element.target}
+            style={{
+              color: element.style.color,
+              fontSize: getFontSize(element.style.fontSize),
+              fontWeight: getFontWeight(element.style.fontWeight),
+              textDecoration: element.style.textDecoration,
+              margin: `${element.style.margin}px 0`,
+              padding: `${element.style.padding}px`,
+              display: 'block',
+              textAlign: getTextAlignment(element.style.alignment)
+            }}
+            onClick={(e) => {
+              if (!isPreviewMode) {
+                e.preventDefault();
+              }
+            }}
+          >
+            {element.content}
+          </a>
+        );
+        
+      case 'table':
+        return (
+          <div
+            style={{
+              margin: `${element.style.margin}px 0`,
+              padding: `${element.style.padding}px`,
+              overflowX: 'auto'
+            }}
+          >
+            <table
+              style={{
+                width: element.style.width,
+                borderCollapse: 'collapse',
+                fontSize: getFontSize(element.style.fontSize)
+              }}
+              className="border-collapse"
+            >
+              <thead>
+                <tr>
+                  {element.headers.map((header, index) => (
+                    <th
+                      key={index}
+                      style={{
+                        backgroundColor: element.style.headerBackgroundColor,
+                        color: element.style.headerTextColor,
+                        borderWidth: `${element.style.borderWidth}px`,
+                        borderColor: element.style.borderColor,
+                        borderStyle: 'solid',
+                        padding: '8px',
+                        textAlign: 'left'
+                      }}
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {element.data.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell, cellIndex) => (
+                      <td
+                        key={cellIndex}
+                        style={{
+                          backgroundColor: element.style.rowBackgroundColor,
+                          color: element.style.rowTextColor,
+                          borderWidth: `${element.style.borderWidth}px`,
+                          borderColor: element.style.borderColor,
+                          borderStyle: 'solid',
+                          padding: '8px'
+                        }}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
       
       default:
         return <div>Unknown element type</div>;
