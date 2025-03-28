@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Heading1, Type, Image, MousePointerClick, Box, Columns2, FileSpreadsheet, LayoutGrid } from 'lucide-react';
+import { 
+  Heading1, Type, Image, MousePointerClick, Box, Columns2, 
+  FileSpreadsheet, LayoutGrid, Video, Link, Table 
+} from 'lucide-react';
 import DraggableElement from './DraggableElement';
 import { Separator } from '@/components/ui/separator';
 import { useBuilder } from '../context/BuilderContext';
@@ -13,8 +16,9 @@ export default function ElementsToolbox() {
   const { isPreviewMode } = state;
   
   // Group elements by category
-  const basicElements: ElementType[] = ['heading', 'paragraph', 'image', 'button'];
+  const basicElements: ElementType[] = ['heading', 'paragraph', 'image', 'button', 'link'];
   const layoutElements: ElementType[] = ['container', 'two-column'];
+  const mediaElements: ElementType[] = ['video', 'table'];
   const componentElements: ElementType[] = ['form', 'gallery'];
   
   if (isPreviewMode) return null;
@@ -34,6 +38,7 @@ export default function ElementsToolbox() {
                 <DraggableElement type="paragraph" label="Paragraph" />
                 <DraggableElement type="image" label="Image" />
                 <DraggableElement type="button" label="Button" />
+                <DraggableElement type="link" label="Link" />
               </div>
             </div>
             
@@ -45,6 +50,17 @@ export default function ElementsToolbox() {
               <div className="grid grid-cols-2 gap-2">
                 <DraggableElement type="container" label="Container" />
                 <DraggableElement type="two-column" label="Two Column" />
+              </div>
+            </div>
+            
+            <Separator />
+            
+            {/* Media Elements */}
+            <div>
+              <h3 className="text-xs uppercase text-gray-500 font-medium mb-2">Media</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <DraggableElement type="video" label="Video" />
+                <DraggableElement type="table" label="Table" />
               </div>
             </div>
             
