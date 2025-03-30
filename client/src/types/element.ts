@@ -13,7 +13,25 @@ export type ElementType =
 
 export type ElementAlignment = 'left' | 'center' | 'right';
 export type FontWeight = 'light' | 'normal' | 'bold';
-export type FontSize = 'small' | 'medium' | 'large' | 'extra-large';
+export type FontSize = string;
+
+export type FontFamily = 
+  | 'Arial'
+  | 'Helvetica'
+  | 'Verdana'
+  | 'Tahoma'
+  | 'Trebuchet MS'
+  | 'Times New Roman'
+  | 'Georgia'
+  | 'Garamond'
+  | 'Courier New'
+  | 'Brush Script MT'
+  | 'Open Sans'
+  | 'Roboto'
+  | 'Lato'
+  | 'Montserrat'
+  | 'Poppins'
+  | string;
 
 export interface BaseElementData {
   id: string;
@@ -29,14 +47,26 @@ export interface BaseElementData {
   };
 }
 
+export interface FormattedRange {
+  start: number;
+  end: number;
+  formatting: TextFormatting;
+}
+
 export interface HeadingElement extends BaseElementData {
   type: 'heading';
   content: string;
   richText: boolean;
   textFormatting?: TextFormatting;
+  selection?: {
+    start: number;
+    end: number;
+  };
+  formattedRanges: FormattedRange[];
   style: BaseElementData['style'] & {
     fontSize: FontSize;
     fontWeight: FontWeight;
+    fontFamily: FontFamily;
     color: string;
     alignment: ElementAlignment;
   };
@@ -47,10 +77,16 @@ export interface ParagraphElement extends BaseElementData {
   content: string;
   richText: boolean;
   textFormatting?: TextFormatting;
+  formattedRanges: FormattedRange[];
   listType?: ListType;
+  selection?: {
+    start: number;
+    end: number;
+  };
   style: BaseElementData['style'] & {
     fontSize: FontSize;
     fontWeight: FontWeight;
+    fontFamily: FontFamily;
     color: string;
     alignment: ElementAlignment;
   };
@@ -76,6 +112,7 @@ export interface ButtonElement extends BaseElementData {
     color: string;
     fontSize: FontSize;
     fontWeight: FontWeight;
+    fontFamily: FontFamily;
     borderRadius: number;
     alignment: ElementAlignment;
   };
@@ -161,6 +198,7 @@ export interface LinkElement extends BaseElementData {
     color: string;
     fontSize: FontSize;
     fontWeight: FontWeight;
+    fontFamily: FontFamily;
     textDecoration: 'none' | 'underline' | 'overline' | 'line-through';
     alignment: ElementAlignment;
   };
@@ -180,6 +218,7 @@ export interface TableElement extends BaseElementData {
     rowBackgroundColor: string;
     rowTextColor: string;
     fontSize: FontSize;
+    fontFamily: FontFamily;
     width: string;
   };
 }

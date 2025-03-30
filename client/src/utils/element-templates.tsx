@@ -8,8 +8,10 @@ import {
   VideoElement,
   LinkElement,
   TableElement,
-  FontWeight 
+  FontWeight,
+  FormattedRange 
 } from '../types/element';
+import { getImagePlaceholder } from './url-helpers';
 
 export const createElementId = () => uuidv4();
 
@@ -69,10 +71,12 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           subscript: false,
           superscript: false
         },
+        formattedRanges: [],
         style: {
           ...baseElement.style,
-          fontSize: 'large',
+          fontSize: '24px',
           fontWeight: 'bold',
+          fontFamily: 'Arial',
           color: '#000000',
           alignment: 'left'
         }
@@ -92,11 +96,13 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           subscript: false,
           superscript: false
         },
+        formattedRanges: [],
         listType: 'none',
         style: {
           ...baseElement.style,
-          fontSize: 'medium',
+          fontSize: '16px',
           fontWeight: 'normal',
+          fontFamily: 'Arial',
           color: '#4B5563',
           alignment: 'left'
         }
@@ -106,8 +112,8 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
       return {
         ...baseElement,
         type: 'image',
-        src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400&q=60',
-        alt: 'Placeholder image',
+        src: getImagePlaceholder(600, 400),
+        alt: 'Laptop with code',
         style: {
           ...baseElement.style,
           width: '100%',
@@ -126,8 +132,9 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           ...baseElement.style,
           backgroundColor: '#3B82F6',
           color: '#FFFFFF',
-          fontSize: 'medium',
+          fontSize: '16px',
           fontWeight: 'normal',
+          fontFamily: 'Arial',
           borderRadius: 4,
           alignment: 'center'
         }
@@ -207,18 +214,18 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
         images: [
           {
             id: uuidv4(),
-            src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
-            alt: 'Gallery image 1'
+            src: getImagePlaceholder(300, 200),
+            alt: 'Laptop with code 1'
           },
           {
             id: uuidv4(),
-            src: 'https://images.unsplash.com/photo-1476611317561-60117649dd94?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
-            alt: 'Gallery image 2'
+            src: getImagePlaceholder(300, 200),
+            alt: 'Laptop with code 2'
           },
           {
             id: uuidv4(),
-            src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
-            alt: 'Gallery image 3'
+            src: getImagePlaceholder(300, 200),
+            alt: 'Laptop with code 3'
           }
         ],
         style: {
@@ -232,6 +239,7 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
       return {
         ...baseElement,
         type: 'video',
+        // Using a YouTube embed URL as default, but users can paste any YouTube link format
         src: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
         title: 'Video Title',
         autoplay: false,
@@ -260,7 +268,8 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           fontSize: 'medium',
           fontWeight: 'normal',
           textDecoration: 'underline',
-          alignment: 'left'
+          alignment: 'left',
+          fontFamily: 'Arial'
         }
       };
       
@@ -284,7 +293,8 @@ export const createNewElement = (type: ElementType, parentId: string | null = nu
           rowBackgroundColor: '#FFFFFF',
           rowTextColor: '#4B5563',
           fontSize: 'small',
-          width: '100%'
+          width: '100%',
+          fontFamily: 'Arial'
         }
       };
     
@@ -326,11 +336,13 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'large',
+      fontSize: '28px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'left'
     }
@@ -352,12 +364,14 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     listType: 'none',
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'medium',
+      fontSize: '16px',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       color: '#4B5563',
       alignment: 'left'
     }
@@ -369,7 +383,7 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
     type: 'image',
     parentId: mainContentRightDropZoneId,
     position: { x: 0, y: 0 },
-    src: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400&q=60',
+    src: getImagePlaceholder(600, 400),
     alt: 'Laptop with code',
     style: {
       margin: 0,
@@ -395,6 +409,7 @@ export const createDefaultTemplate = (): [Template, Record<string, DropZone>, Re
       color: '#FFFFFF',
       fontSize: 'medium',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       borderRadius: 4,
       alignment: 'center'
     }
@@ -495,11 +510,13 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'extra-large',
+      fontSize: '32px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#FFFFFF',
       alignment: 'center'
     }
@@ -520,12 +537,14 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false, 
       superscript: false
     },
+    formattedRanges: [],
     listType: 'none',
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'medium',
+      fontSize: '20px',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       color: '#FFFFFF',
       alignment: 'center'
     }
@@ -543,8 +562,9 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       padding: 8,
       backgroundColor: '#FFFFFF',
       color: '#3B82F6',
-      fontSize: 'medium',
+      fontSize: '16px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       borderRadius: 4,
       alignment: 'center'
     }
@@ -566,11 +586,13 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'large',
+      fontSize: '24px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -591,12 +613,14 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     listType: 'none',
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'medium',
+      fontSize: '16px',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       color: '#4B5563',
       alignment: 'center'
     }
@@ -618,11 +642,13 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'large',
+      fontSize: '24px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -636,17 +662,17 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
     images: [
       {
         id: uuidv4(),
-        src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
+        src: getImagePlaceholder(300, 200),
         alt: 'Project 1'
       },
       {
         id: uuidv4(),
-        src: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
+        src: getImagePlaceholder(300, 200),
         alt: 'Project 2'
       },
       {
         id: uuidv4(),
-        src: 'https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&h=200&q=60',
+        src: getImagePlaceholder(300, 200),
         alt: 'Project 3'
       }
     ],
@@ -674,11 +700,13 @@ export const createTemplate2 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
-      fontSize: 'large',
+      fontSize: '24px',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -821,11 +849,13 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'large',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'left'
     }
@@ -847,11 +877,13 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'extra-large',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -872,12 +904,14 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     listType: 'none',
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'medium',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       color: '#4B5563',
       alignment: 'center'
     }
@@ -897,6 +931,7 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       color: '#FFFFFF',
       fontSize: 'medium',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       borderRadius: 4,
       alignment: 'center'
     }
@@ -918,11 +953,13 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'large',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -943,12 +980,14 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     listType: 'none',
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'medium',
       fontWeight: 'normal',
+      fontFamily: 'Arial',
       color: '#4B5563',
       alignment: 'center'
     }
@@ -970,11 +1009,13 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'large',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#000000',
       alignment: 'center'
     }
@@ -1003,7 +1044,8 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       rowBackgroundColor: '#FFFFFF',
       rowTextColor: '#4B5563',
       fontSize: 'small',
-      width: '100%'
+      width: '100%',
+      fontFamily: 'Arial'
     }
   };
   
@@ -1023,11 +1065,13 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       subscript: false,
       superscript: false
     },
+    formattedRanges: [],
     style: {
       margin: 16,
       padding: 8,
       fontSize: 'large',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       color: '#FFFFFF',
       alignment: 'center'
     }
@@ -1047,6 +1091,7 @@ export const createTemplate3 = (): [Template, Record<string, DropZone>, Record<s
       color: '#3B82F6',
       fontSize: 'medium',
       fontWeight: 'bold',
+      fontFamily: 'Arial',
       borderRadius: 4,
       alignment: 'center'
     }

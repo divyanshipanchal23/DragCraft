@@ -1,10 +1,33 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
+import { upload, getFileUrl } from "./fileUpload";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Static file serving for uploads
+  app.use("/uploads", express.static(path.join(process.cwd(), "server", "uploads")));
+
+  // Image upload endpoint
+  app.post("/api/upload", upload.single("image"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    
+    const fileUrl = getFileUrl(req.file.filename);
+    
+    res.json({
+      success: true,
+      url: fileUrl,
+      filename: req.file.filename,
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+  });
+
   // Projects API
   
   // Get all projects for a user

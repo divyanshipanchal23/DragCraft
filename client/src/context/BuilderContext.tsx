@@ -543,7 +543,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
 }
 
 // Custom hook to use the context
-export function useBuilder() {
+export const useBuilder = () => {
   const context = useContext(BuilderContext);
   if (context === undefined) {
     throw new Error('useBuilder must be used within a BuilderProvider');

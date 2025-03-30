@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '../hooks/use-mobile';
 import ElementsToolbox from './ElementsToolbox';
 import CanvasArea from './CanvasArea';
 import PropertiesPanel from './PropertiesPanel';
 import Navbar from './Navbar';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import { useBuilder } from '../context/BuilderContext';
 import { PanelLeft, PanelRight, X, Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 export default function WebsiteBuilder() {
   const isMobile = useIsMobile();

@@ -15,7 +15,7 @@ import {
   Table,
   Clock
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import { useBuilder } from '../context/BuilderContext';
 
 interface DraggableElementProps {

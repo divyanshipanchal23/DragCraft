@@ -1,21 +1,43 @@
 import { useBuilder } from '../context/BuilderContext';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { X, Copy, Trash, Video, Link as LinkIcon, TableIcon } from 'lucide-react';
-import { ElementType, TextFormatting, ListType, FontSize } from '../types/element';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Separator } from './ui/separator';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Textarea } from './ui/textarea';
+import { Switch } from './ui/switch';
+import { X, Copy, Trash, Video, Link as LinkIcon, TableIcon, Image } from 'lucide-react';
+import { ElementType, TextFormatting, ListType, FontSize, FontFamily } from '../types/element';
 import RichTextEditor from './RichTextEditor';
+import { Slider } from "./ui/slider";
+import { convertToYouTubeEmbedURL, ensureProtocol, processImageUrl, getImagePlaceholder } from '../utils/url-helpers';
+import ImageUploader from './ImageUploader';
 
 interface PropertiesPanelProps {
   isMobile: boolean;
   isOpen?: boolean;
   onClose?: () => void;
 }
+
+// Font families available for selection
+const FONT_FAMILIES: FontFamily[] = [
+  'Arial',
+  'Helvetica',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Times New Roman',
+  'Georgia',
+  'Garamond',
+  'Courier New',
+  'Brush Script MT',
+  'Open Sans',
+  'Roboto',
+  'Lato',
+  'Montserrat',
+  'Poppins'
+];
 
 export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: PropertiesPanelProps) {
   const { state, updateElement, deleteElement, selectElement, duplicateElement } = useBuilder();
@@ -100,16 +122,32 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                     subscript: false,
                     superscript: false
                   }}
+                  formattedRanges={textElement.formattedRanges || []}
                   listType={textElement.type === 'paragraph' ? (textElement.listType || 'none') : undefined}
                   onContentChange={(newContent) => {
                     updateElement(textElement.id, { content: newContent });
                   }}
-                  onFormattingChange={(newFormatting) => {
-                    updateElement(textElement.id, { textFormatting: newFormatting });
+                  onFormattingChange={(newFormatting, selection) => {
+                    updateElement(textElement.id, { 
+                      textFormatting: newFormatting,
+                      selection: selection || undefined
+                    });
+                  }}
+                  onFormattedRangesChange={(newRanges) => {
+                    updateElement(textElement.id, { formattedRanges: newRanges });
                   }}
                   onListTypeChange={textElement.type === 'paragraph' ? (listType) => {
                     updateElement(textElement.id, { listType });
                   } : undefined}
+                  onSave={() => {
+                    // Apply/save the changes to make sure they're reflected in the canvas
+                    // This is just triggering a state update to ensure changes are applied
+                    const timestamp = new Date().toISOString();
+                    // Use style property for the update instead of non-existent updatedAt
+                    updateElement(textElement.id, { 
+                      style: { ...textElement.style }
+                    });
+                  }}
                 />
               ) : (
                 <Textarea 
@@ -124,22 +162,116 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
             
             <div className="space-y-2">
               <Label>Font Size</Label>
+              <div className="flex gap-2 items-center">
+                <Input 
+                  type="number" 
+                  min="8"
+                  max="72"
+                  value={textElement.style.fontSize.toString().replace(/[^\d]/g, '')}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (!isNaN(value)) {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: `${value}px` }
+                      });
+                    }
+                  }}
+                  className="w-20"
+                />
+                <Select 
+                  value={textElement.style.fontSize.includes('px') ? 'px' : 
+                         textElement.style.fontSize.includes('rem') ? 'rem' : 
+                         textElement.style.fontSize.includes('em') ? 'em' : 'px'}
+                  onValueChange={(unit) => {
+                    const currentSize = parseInt(textElement.style.fontSize.toString().replace(/[^\d]/g, ''));
+                    if (!isNaN(currentSize)) {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: `${currentSize}${unit}` }
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-20">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="px">px</SelectItem>
+                    <SelectItem value="rem">rem</SelectItem>
+                    <SelectItem value="em">em</SelectItem>
+                    <SelectItem value="%">%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="pt-2">
+                <Label className="text-xs text-muted-foreground">Quick Sizes</Label>
+                <div className="flex space-x-2 mt-1">
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: '16px' }
+                      });
+                    }}
+                  >
+                    Small
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: '20px' }
+                      });
+                    }}
+                  >
+                    Medium
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: '24px' }
+                      });
+                    }}
+                  >
+                    Large
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      updateElement(textElement.id, {
+                        style: { ...textElement.style, fontSize: '32px' }
+                      });
+                    }}
+                  >
+                    XL
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Font Family</Label>
               <Select 
-                value={textElement.style.fontSize}
+                value={textElement.style.fontFamily || 'Arial'}
                 onValueChange={(value) => {
                   updateElement(textElement.id, {
-                    style: { ...textElement.style, fontSize: value as FontSize }
+                    style: { ...textElement.style, fontFamily: value }
                   });
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select size" />
+                  <SelectValue placeholder="Select font" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="small">Small</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="large">Large</SelectItem>
-                  <SelectItem value="extra-large">Extra Large</SelectItem>
+                  {FONT_FAMILIES.map(font => (
+                    <SelectItem key={font} value={font} style={{ fontFamily: font }}>
+                      {font}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -263,13 +395,12 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
         return (
           <>
             <div className="space-y-2">
-              <Label>Image URL</Label>
-              <Input 
-                type="text" 
-                value={imageElement.src} 
-                onChange={(e) => {
-                  updateElement(imageElement.id, { src: e.target.value });
+              <Label>Image</Label>
+              <ImageUploader 
+                onImageUploaded={(imageUrl) => {
+                  updateElement(imageElement.id, { src: imageUrl });
                 }}
+                showPreview={true}
               />
             </div>
             
@@ -281,6 +412,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 onChange={(e) => {
                   updateElement(imageElement.id, { alt: e.target.value });
                 }}
+                placeholder="Describe the image for accessibility"
               />
             </div>
             
@@ -464,9 +596,21 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                 type="text" 
                 value={videoElement.src} 
                 onChange={(e) => {
-                  updateElement(videoElement.id, { src: e.target.value });
+                  // Process the URL before updating the element
+                  let url = ensureProtocol(e.target.value.trim());
+                  
+                  // Convert YouTube URLs to embed format
+                  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    url = convertToYouTubeEmbedURL(url);
+                  }
+                  
+                  updateElement(videoElement.id, { src: url });
                 }}
+                placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
               />
+              <div className="text-xs text-muted-foreground mt-1">
+                Supports YouTube, Vimeo, and other video platforms.
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -1175,7 +1319,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                     const newImages = [...galleryElement.images];
                     newImages.push({
                       id: `img-${Date.now()}`,
-                      src: 'https://via.placeholder.com/200',
+                      src: getImagePlaceholder(300, 200),
                       alt: 'New image'
                     });
                     updateElement(galleryElement.id, { images: newImages });
@@ -1204,16 +1348,28 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                       </Button>
                     </div>
                     
+                    <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden flex items-center justify-center mb-2">
+                      <img 
+                        src={processImageUrl(image.src)} 
+                        alt={image.alt}
+                        className="max-w-full max-h-full object-contain"
+                        onError={(e) => {
+                          // If image fails to load, replace with placeholder
+                          const target = e.target as HTMLImageElement;
+                          target.src = getImagePlaceholder(300, 200);
+                        }}
+                      />
+                    </div>
+                    
                     <div className="space-y-2">
-                      <Label>Image URL</Label>
-                      <Input 
-                        type="text" 
-                        value={image.src} 
-                        onChange={(e) => {
+                      <Label>Image</Label>
+                      <ImageUploader 
+                        onImageUploaded={(imageUrl) => {
                           const newImages = [...galleryElement.images];
-                          newImages[index] = { ...image, src: e.target.value };
+                          newImages[index] = { ...image, src: imageUrl };
                           updateElement(galleryElement.id, { images: newImages });
                         }}
+                        showPreview={false}
                       />
                     </div>
                     
@@ -1227,6 +1383,7 @@ export default function PropertiesPanel({ isMobile, isOpen = true, onClose }: Pr
                           newImages[index] = { ...image, alt: e.target.value };
                           updateElement(galleryElement.id, { images: newImages });
                         }}
+                        placeholder="Describe the image for accessibility"
                       />
                     </div>
                   </div>

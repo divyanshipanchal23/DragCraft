@@ -277,3 +277,47 @@
 .recent-badge {
   animation: pulse-scale 2s ease-in-out infinite;
 }
+
+/* Resize styling */
+.resize-active {
+  transition: none !important;
+  will-change: width, height;
+  z-index: 100 !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.4);
+  opacity: 0.95;
+}
+
+.resize-active * {
+  pointer-events: none;
+}
+
+.no-select {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* When resize is active, disable all transitions in the document */
+body.is-resizing * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Disable pointer events on other elements during resize */
+body.is-resizing .element-enter:not(.resize-active) {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Resize handles styling */
+[data-handle] {
+  touch-action: none;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Improve performance during resize */
+body.is-resizing {
+  cursor: move !important;
+  overflow: hidden;
+}

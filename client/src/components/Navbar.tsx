@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useBuilder } from '../context/BuilderContext';
 import { useTheme } from '../context/ThemeContext';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '../hooks/use-toast';
 import { 
   Undo2, Redo2, Eye, Save, ArrowLeft, 
   Laptop, Smartphone, Tablet, Home, Menu, X, 
   BookTemplate, Moon, Sun, Search
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from './ui/badge';
 import { 
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, 
   DropdownMenuTrigger, DropdownMenuSeparator 
-} from '@/components/ui/dropdown-menu';
+} from './ui/dropdown-menu';
 
 export default function Navbar() {
   const { state, togglePreviewMode, setViewMode, undo, redo, canUndo, canRedo, setTemplate } = useBuilder();

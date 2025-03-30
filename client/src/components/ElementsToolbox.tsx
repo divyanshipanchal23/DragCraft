@@ -7,13 +7,13 @@ import {
   Clock, History
 } from 'lucide-react';
 import DraggableElement from './DraggableElement';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Separator } from './ui/separator';
+import { Input } from './ui/input';
+import { Badge } from './ui/badge';
 import { useBuilder } from '../context/BuilderContext';
 import { ElementType } from '../types/element';
 import { getElementsToolboxItems } from '../utils/element-templates';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
 export default function ElementsToolbox() {
   const { state } = useBuilder();

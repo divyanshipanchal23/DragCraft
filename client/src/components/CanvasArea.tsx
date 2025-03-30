@@ -2,10 +2,10 @@ import { useBuilder } from '../context/BuilderContext';
 import DropZone from './DropZone';
 import { defaultTemplateId, template2Id, template3Id } from '../utils/element-templates';
 import { Laptop, Tablet, Smartphone, Zap, Info, Hand, MousePointer } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Badge } from './ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { useState, useEffect, useRef } from 'react';
+import { Button } from './ui/button';
 import { 
   Dialog,
   DialogContent,
@@ -13,7 +13,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from './ui/dialog';
+import { cn } from '../lib/utils';
+
+// CSS variables to force light mode for the canvas content
+const canvasThemeStyles = {
+  '--background': '0 0% 100%',
+  '--foreground': '222.2 84% 4.9%',
+  '--card': '0 0% 100%',
+  '--card-foreground': '222.2 84% 4.9%',
+  '--popover': '0 0% 100%',
+  '--popover-foreground': '222.2 84% 4.9%',
+  '--primary': '222.2 47.4% 11.2%',
+  '--primary-foreground': '210 40% 98%',
+  '--secondary': '210 40% 96.1%',
+  '--secondary-foreground': '222.2 47.4% 11.2%',
+  '--muted': '210 40% 96.1%',
+  '--muted-foreground': '215.4 16.3% 46.9%',
+  '--accent': '210 40% 96.1%',
+  '--accent-foreground': '222.2 47.4% 11.2%',
+  '--destructive': '0 84.2% 60.2%',
+  '--destructive-foreground': '210 40% 98%',
+  '--border': '214.3 31.8% 91.4%',
+  '--input': '214.3 31.8% 91.4%',
+  '--ring': '222.2 84% 4.9%',
+} as React.CSSProperties;
 
 export default function CanvasArea() {
   const { state, setTemplate } = useBuilder();
@@ -21,6 +45,9 @@ export default function CanvasArea() {
   const [showControlsTip, setShowControlsTip] = useState(false);
   const [showFirstTimeTips, setShowFirstTimeTips] = useState(true);
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(true);
+  const [showHelpButton, setShowHelpButton] = useState(true);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const welcomeDialogShownRef = useRef(false);
   
   // Show tips briefly when entering edit mode
   useEffect(() => {
@@ -33,12 +60,42 @@ export default function CanvasArea() {
     }
   }, [isPreviewMode]);
   
-  // Check if it's the first time opening the editor
+  // Check if it's the first time opening the editor - with a delay
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcomeGuide');
-    if (hasSeenWelcome) {
-      setShowWelcomeDialog(false);
+    // Only check once and use a delay to ensure component is fully loaded
+    if (!welcomeDialogShownRef.current) {
+      welcomeDialogShownRef.current = true;
+      
+      // Delay checking localStorage to ensure the component is fully mounted
+      setTimeout(() => {
+        const hasSeenWelcome = localStorage.getItem('hasSeenWelcomeGuide');
+        if (hasSeenWelcome) {
+          setShowWelcomeDialog(false);
+        }
+      }, 1000);
     }
+  }, []);
+
+  // Add scroll listener to hide help button when scrolled down
+  useEffect(() => {
+    const handleScroll = () => {
+      if (canvasRef.current) {
+        // Hide the button when scrolled down more than 200px
+        const scrollPosition = canvasRef.current.scrollTop;
+        setShowHelpButton(scrollPosition < 200);
+      }
+    };
+    
+    const canvasElement = canvasRef.current;
+    if (canvasElement) {
+      canvasElement.addEventListener('scroll', handleScroll);
+    }
+    
+    return () => {
+      if (canvasElement) {
+        canvasElement.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, []);
   
   // Get the current template
@@ -101,9 +158,17 @@ export default function CanvasArea() {
   };
   
   return (
-    <div className="flex-1 overflow-y-auto relative bg-gradient-to-b from-gray-50 to-gray-100">
+    <div ref={canvasRef} className="flex-1 overflow-y-auto relative bg-slate-50 dark:bg-slate-900">
       {/* Welcome Dialog for first-time users */}
-      <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
+      <Dialog 
+        open={showWelcomeDialog} 
+        onOpenChange={(isOpen) => {
+          // If closing, save the preference
+          if (!isOpen) {
+            closeWelcomeDialog();
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center text-xl">Welcome to Website Builder!</DialogTitle>
@@ -154,9 +219,9 @@ export default function CanvasArea() {
       
       {/* Canvas Header */}
       {!isPreviewMode && (
-        <div className="bg-background p-3 border-b border-border shadow-sm flex justify-between items-center">
+        <div className="bg-white dark:bg-gray-800 p-3 border-b border-gray-200 dark:border-gray-700 shadow-sm flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <h2 className="font-medium text-foreground">Canvas</h2>
+            <h2 className="font-medium text-gray-800 dark:text-gray-200">Canvas</h2>
             <Badge variant="outline" className="ml-2 font-normal">
               {getTemplateName()}
             </Badge>
@@ -193,12 +258,12 @@ export default function CanvasArea() {
         
         {/* Editor tips - only shown in edit mode */}
         {!isPreviewMode && showControlsTip && (
-          <div className="absolute top-20 right-4 z-30 bg-background/95 border border-primary/20 shadow-lg rounded-lg p-3 max-w-[250px] text-sm animate-in fade-in slide-in-from-right-5 duration-500">
+          <div className="absolute top-20 right-4 z-30 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 shadow-lg rounded-lg p-3 max-w-[250px] text-sm animate-in fade-in slide-in-from-right-5 duration-500">
             <div className="flex items-start gap-2">
-              <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+              <Zap className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-foreground mb-1">Quick Tip</p>
-                <p className="text-xs text-muted-foreground leading-snug">
+                <p className="font-medium text-gray-800 dark:text-gray-200 mb-1">Quick Tip</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-snug">
                   Drag elements from the toolbox and drop them into any drop zone. 
                   Click any element to edit its properties.
                 </p>
@@ -215,13 +280,19 @@ export default function CanvasArea() {
           </div>
         )}
         
-        {/* Help dialog trigger */}
+        {/* Help dialog trigger with smooth fade effect */}
         <Dialog>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
               size="sm" 
-              className="absolute bottom-4 right-4 z-20 bg-background/80 backdrop-blur-sm shadow-sm"
+              className={cn(
+                "absolute bottom-4 right-4 z-20 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm transition-all duration-300 ease-in-out",
+                // Show button only when not in preview mode and when near the top of the page
+                (isPreviewMode || !showHelpButton) 
+                  ? "opacity-0 pointer-events-none" 
+                  : "opacity-100 pointer-events-auto"
+              )}
             >
               <Info className="h-4 w-4 mr-1.5" />
               How it works
@@ -266,8 +337,11 @@ export default function CanvasArea() {
           </DialogContent>
         </Dialog>
         
-        {/* Device frame with website content */}
-        <div className={`relative ${getContainerClass()} mx-auto bg-background shadow-md border border-border rounded overflow-hidden`}>
+        {/* Device frame with website content - Theme independent wrapper */}
+        <div 
+          className={`relative ${getContainerClass()} mx-auto bg-white shadow-md border border-gray-200 rounded overflow-hidden`}
+          style={canvasThemeStyles} // Apply consistent light theme
+        >
           {/* Template Structure */}
           {currentTemplate && (
             <>
@@ -281,7 +355,7 @@ export default function CanvasArea() {
                     />
                   </header>
                   
-                  <main className="p-8">
+                  <main className="p-8 bg-white text-gray-900">
                     <div className="grid md:grid-cols-2 gap-6 mb-8">
                       <DropZone 
                         id={currentTemplate.dropZones[1].id} 

@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 import { useBuilder } from '../context/BuilderContext';
 import PlacedElement from './PlacedElement';
 import { ElementType } from '../types/element';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 import { Sparkles, History } from 'lucide-react';
 
 interface DropZoneProps {
@@ -88,7 +88,7 @@ export default function DropZone({ id, className = '', placeholderText = 'Drag a
       {/* Sparkle indicator when hovering with draggable element */}
       {showSparkle && !isPreviewMode && !hasElements && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+          <Sparkles className="h-6 w-6 text-blue-500 animate-pulse" />
         </div>
       )}
       
@@ -105,14 +105,14 @@ export default function DropZone({ id, className = '', placeholderText = 'Drag a
       ) : !isPreviewMode ? (
         <div className="flex flex-col items-center justify-center text-center p-4 transition-all duration-300">
           <p className={cn(
-            "text-muted-foreground text-sm",
-            { "text-primary font-medium": isOver }
+            "text-gray-500 text-sm",
+            { "text-blue-600 font-medium": isOver }
           )}>
             {isOver ? "Drop to add here" : placeholderText}
           </p>
           
           {isOver && (
-            <div className="mt-2 text-xs text-muted-foreground animate-pulse">
+            <div className="mt-2 text-xs text-gray-500 animate-pulse">
               Release to place element
             </div>
           )}
@@ -121,7 +121,7 @@ export default function DropZone({ id, className = '', placeholderText = 'Drag a
       
       {/* Active drop zone indicator - shows when dragging elements */}
       {isOver && !isPreviewMode && (
-        <div className="absolute inset-0 border-2 border-primary/50 rounded pointer-events-none z-20"></div>
+        <div className="absolute inset-0 border-2 border-blue-500/50 rounded pointer-events-none z-20"></div>
       )}
     </div>
   );
