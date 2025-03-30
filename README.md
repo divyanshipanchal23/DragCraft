@@ -3,14 +3,17 @@ DragCraft - Website Builder with Drag-and-Drop Interface
 A modern website builder that allows users to create websites using an intuitive drag-and-drop interface combined with form-based customization.
 
 Setup Instructions
+1. Download .zip from github or Clone the repository with: 
 
-1. Open the terminal and navigate to the project directory
+git clone https://github.com/divyanshipanchal23/DragCraft.git 
 
-2. Install Node.js dependencies:
+2. Navigate to the project in the terminal
+
+3. Install Node.js dependencies:
    
    npm install
 
-3. Start the development server:
+4. Start the development server:(Access at http://localhost:5173)
   
    npm run dev  
 
