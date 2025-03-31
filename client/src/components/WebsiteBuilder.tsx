@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -10,11 +10,13 @@ import { Button } from './ui/button';
 import { useBuilder } from '../context/BuilderContext';
 import { PanelLeft, PanelRight, X, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { useToast } from '../hooks/use-toast';
 
 export default function WebsiteBuilder() {
   const isMobile = useIsMobile();
-  const { state, selectElement } = useBuilder();
+  const { state, selectElement, deleteElement } = useBuilder();
   const { selectedElementId } = state;
+  const { toast } = useToast();
   
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(!isMobile);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(!isMobile && !!selectedElementId);
@@ -26,6 +28,43 @@ export default function WebsiteBuilder() {
     }
     setRightSidebarOpen(!rightSidebarOpen);
   };
+  
+  // Add keyboard shortcut for deleting selected element
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if an element is selected and not in preview mode
+      if (selectedElementId && !state.isPreviewMode) {
+        // Delete on Delete or Backspace key
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          // Prevent default behavior if in an input field
+          if (
+            e.target instanceof HTMLInputElement ||
+            e.target instanceof HTMLTextAreaElement ||
+            (e.target as HTMLElement).isContentEditable
+          ) {
+            return; // Let the default behavior happen in input fields
+          }
+          
+          e.preventDefault(); // Prevent browser navigation
+          deleteElement(selectedElementId);
+          
+          // Show a toast notification
+          toast({
+            title: '🗑️ Element deleted',
+            description: 'The selected element has been deleted.'
+          });
+        }
+      }
+    };
+    
+    // Add event listener to window
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up event listener
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedElementId, state.isPreviewMode, deleteElement, toast]);
   
   // Close right sidebar when no element is selected
   if (rightSidebarOpen && !selectedElementId && !isMobile) {
